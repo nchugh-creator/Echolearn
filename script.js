@@ -1,0 +1,1237 @@
+// Global variables
+let currentUser = null;
+let currentSection = 'home';
+let flashcards = [];
+let currentCardIndex = 0;
+let recognition = null;
+let synthesis = window.speechSynthesis;
+let isRecording = false;
+let isSpeaking = false;
+let isPdfSpeaking = false;
+let currentPdfText = '';
+let pdfUtterance = null;
+let speechRate = 1;
+let speechPitch = 1;
+let selectedVoice = null;
+let availableVoices = [];
+
+// Initialize the application
+document.addEventListener('DOMContentLoaded', function() {
+    initializeApp();
+    setupEventListeners();
+    checkAuthStatus();
+});
+
+function initializeApp() {
+    // Initialize speech recognition if available
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        recognition = new SpeechRecognition();
+        recognition.continuous = true;
+        recognition.interimResults = true;
+        recognition.lang = 'en-US';
+        
+        recognition.onresult = handleSpeechResult;
+        recognition.onerror = handleSpeechError;
+        recognition.onend = handleSpeechEnd;
+    } else {
+        // Disable speech features if not supported
+        document.getElementById('startRecording').disabled = true;
+        document.getElementById('stopRecording').disabled = true;
+        showToast('Speech recognition not supported in this browser', 'error');
+    }
+    
+    // Initialize speech synthesis voices
+    initializeVoices();
+    
+    // Load saved notes
+    loadSavedNotes();
+    
+    // Check AI/Bedrock status
+    checkBedrockStatus();
+}
+
+function initializeVoices() {
+    console.log('Initializing voices...');
+    
+    // Load voices when they become available
+    function loadVoices() {
+        availableVoices = synthesis.getVoices();
+        console.log('Available voices:', availableVoices.length);
+        console.log('Voices:', availableVoices.map(v => `${v.name} (${v.lang})`));
+        
+        populateVoiceSelect();
+        
+        // Set a default friendly voice
+        setDefaultVoice();
+    }
+    
+    // Voices might load asynchronously
+    if (synthesis.onvoiceschanged !== undefined) {
+        synthesis.onvoiceschanged = loadVoices;
+    }
+    
+    // Try to load voices immediately (some browsers)
+    loadVoices();
+    
+    // Fallback: try again after a short delay
+    setTimeout(loadVoices, 100);
+    
+    // Another fallback for slower systems
+    setTimeout(loadVoices, 1000);
+}
+
+function populateVoiceSelect() {
+    const voiceSelect = document.getElementById('voiceSelect');
+    if (!voiceSelect) return;
+    
+    voiceSelect.innerHTML = '';
+    
+    if (availableVoices.length === 0) {
+        voiceSelect.innerHTML = '<option value="">No voices available</option>';
+        return;
+    }
+    
+    // Filter for English voices and prioritize natural-sounding ones
+    const englishVoices = availableVoices.filter(voice => 
+        voice.lang.startsWith('en') || voice.lang === 'en-US' || voice.lang === 'en-GB'
+    );
+    
+    // Sort voices to put better ones first
+    const sortedVoices = englishVoices.sort((a, b) => {
+        // Prioritize voices with "natural", "premium", or female names
+        const aScore = getVoiceScore(a);
+        const bScore = getVoiceScore(b);
+        return bScore - aScore;
+    });
+    
+    // Add default option
+    const defaultOption = document.createElement('option');
+    defaultOption.value = '';
+    defaultOption.textContent = 'Default Voice';
+    voiceSelect.appendChild(defaultOption);
+    
+    // Add voice options
+    sortedVoices.forEach((voice, index) => {
+        const option = document.createElement('option');
+        option.value = index;
+        option.textContent = `${voice.name} (${voice.lang})`;
+        voiceSelect.appendChild(option);
+    });
+}
+
+function getVoiceScore(voice) {
+    let score = 0;
+    const name = voice.name.toLowerCase();
+    
+    // Prefer natural/premium voices
+    if (name.includes('natural') || name.includes('premium') || name.includes('neural')) score += 10;
+    
+    // Prefer female voices (often sound friendlier)
+    if (name.includes('female') || name.includes('woman') || 
+        name.includes('samantha') || name.includes('alex') || 
+        name.includes('karen') || name.includes('susan') ||
+        name.includes('victoria') || name.includes('allison')) score += 5;
+    
+    // Prefer US English
+    if (voice.lang === 'en-US') score += 3;
+    
+    // Avoid robotic-sounding voices
+    if (name.includes('robot') || name.includes('machine') || name.includes('computer')) score -= 5;
+    
+    return score;
+}
+
+function setDefaultVoice() {
+    if (availableVoices.length === 0) {
+        console.log('No voices available for default selection');
+        return;
+    }
+    
+    console.log('Setting default voice from', availableVoices.length, 'available voices');
+    
+    // Try to find a good default voice
+    const preferredVoices = availableVoices.filter(voice => {
+        const name = voice.name.toLowerCase();
+        return (voice.lang === 'en-US' || voice.lang.startsWith('en')) &&
+               (name.includes('natural') || name.includes('samantha') || 
+                name.includes('alex') || name.includes('karen'));
+    });
+    
+    if (preferredVoices.length > 0) {
+        selectedVoice = preferredVoices[0];
+        console.log('Selected preferred voice:', selectedVoice.name);
+    } else {
+        // Fallback to first English voice
+        const englishVoices = availableVoices.filter(voice => 
+            voice.lang.startsWith('en')
+        );
+        if (englishVoices.length > 0) {
+            selectedVoice = englishVoices[0];
+            console.log('Selected English voice:', selectedVoice.name);
+        } else {
+            selectedVoice = availableVoices[0];
+            console.log('Selected first available voice:', selectedVoice.name);
+        }
+    }
+}
+
+function setupEventListeners() {
+    // Authentication forms
+    document.getElementById('loginForm').addEventListener('submit', handleLogin);
+    document.getElementById('signupForm').addEventListener('submit', handleSignup);
+    
+    // Speech controls for notes
+    document.getElementById('startRecording').addEventListener('click', startRecording);
+    document.getElementById('stopRecording').addEventListener('click', stopRecording);
+    document.getElementById('playNotes').addEventListener('click', readNotesAloud);
+    document.getElementById('pauseNotesSpeech').addEventListener('click', pauseNotesSpeech);
+    
+    // PDF speech controls
+    document.getElementById('notesPdfFile').addEventListener('change', handlePdfUpload);
+    document.getElementById('testSpeech').addEventListener('click', testSpeechSynthesis);
+    document.getElementById('playPdfText').addEventListener('click', readPdfAloud);
+    document.getElementById('pausePdfSpeech').addEventListener('click', pausePdfSpeech);
+    document.getElementById('stopPdfSpeech').addEventListener('click', stopPdfSpeech);
+    document.getElementById('speechRate').addEventListener('input', updateSpeechRate);
+    document.getElementById('speechPitch').addEventListener('input', updateSpeechPitch);
+    document.getElementById('voiceSelect').addEventListener('change', updateSelectedVoice);
+    
+    // Notes actions
+    document.getElementById('saveNotes').addEventListener('click', saveNotes);
+    document.getElementById('clearNotes').addEventListener('click', clearNotes);
+    
+    // File upload for flashcards
+    document.getElementById('pdfFile').addEventListener('change', handleFileSelect);
+    
+    // Flashcard navigation
+    document.getElementById('prevCard').addEventListener('click', () => navigateCard(-1));
+    document.getElementById('nextCard').addEventListener('click', () => navigateCard(1));
+    
+    // Modal close on outside click
+    document.getElementById('authModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeAuth();
+        }
+    });
+    
+    // Keyboard navigation
+    document.addEventListener('keydown', handleKeyboardNavigation);
+}
+
+// Navigation functions
+function showSection(sectionName) {
+    // Hide all sections
+    document.querySelectorAll('.content-section').forEach(section => {
+        section.classList.remove('active');
+    });
+    
+    // Show selected section
+    document.getElementById(sectionName + 'Section').classList.add('active');
+    currentSection = sectionName;
+    
+    // Update navigation buttons
+    document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    
+    // Announce section change for screen readers
+    announceToScreenReader(`Navigated to ${sectionName} section`);
+}
+
+function handleKeyboardNavigation(e) {
+    // Escape key closes modals
+    if (e.key === 'Escape') {
+        closeAuth();
+    }
+    
+    // Arrow keys for flashcard navigation
+    if (currentSection === 'flashcards' && flashcards.length > 0) {
+        if (e.key === 'ArrowLeft') {
+            navigateCard(-1);
+        } else if (e.key === 'ArrowRight') {
+            navigateCard(1);
+        } else if (e.key === ' ') {
+            e.preventDefault();
+            flipCurrentCard();
+        }
+    }
+}
+
+// Authentication functions
+function showAuth() {
+    document.getElementById('authModal').style.display = 'block';
+    document.getElementById('authModal').setAttribute('aria-hidden', 'false');
+    document.getElementById('loginEmail').focus();
+}
+
+function closeAuth() {
+    document.getElementById('authModal').style.display = 'none';
+    document.getElementById('authModal').setAttribute('aria-hidden', 'true');
+}
+
+function showLogin() {
+    document.getElementById('loginForm').style.display = 'block';
+    document.getElementById('signupForm').style.display = 'none';
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelector('.tab-btn').classList.add('active');
+    document.getElementById('authTitle').textContent = 'Login';
+}
+
+function showSignup() {
+    document.getElementById('loginForm').style.display = 'none';
+    document.getElementById('signupForm').style.display = 'block';
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('.tab-btn')[1].classList.add('active');
+    document.getElementById('authTitle').textContent = 'Sign Up';
+}
+
+function handleLogin(e) {
+    e.preventDefault();
+    const email = document.getElementById('loginEmail').value;
+    const password = document.getElementById('loginPassword').value;
+    
+    // Simulate login (in real app, this would be an API call)
+    const users = JSON.parse(localStorage.getItem('users') || '[]');
+    const user = users.find(u => u.email === email && u.password === password);
+    
+    if (user) {
+        currentUser = user;
+        localStorage.setItem('currentUser', JSON.stringify(user));
+        showMainApp();
+        updateAuthUI();
+        closeAuth();
+        showToast('Login successful! Welcome to EchoLearn!', 'success');
+        updateProfileDisplay();
+    } else {
+        showToast('Invalid email or password', 'error');
+    }
+}
+
+function handleSignup(e) {
+    e.preventDefault();
+    const formData = {
+        name: document.getElementById('signupName').value,
+        email: document.getElementById('signupEmail').value,
+        password: document.getElementById('signupPassword').value,
+        city: document.getElementById('signupCity').value,
+        age: document.getElementById('signupAge').value,
+        disability: document.getElementById('signupDisability').value,
+        memo: document.getElementById('signupMemo').value,
+        id: Date.now().toString()
+    };
+    
+    // Check if user already exists
+    const users = JSON.parse(localStorage.getItem('users') || '[]');
+    if (users.find(u => u.email === formData.email)) {
+        showToast('User with this email already exists', 'error');
+        return;
+    }
+    
+    // Save user
+    users.push(formData);
+    localStorage.setItem('users', JSON.stringify(users));
+    
+    // Auto-login
+    currentUser = formData;
+    localStorage.setItem('currentUser', JSON.stringify(formData));
+    
+    showMainApp();
+    updateAuthUI();
+    closeAuth();
+    showToast('Account created successfully! Welcome to EchoLearn!', 'success');
+    updateProfileDisplay();
+}
+
+function checkAuthStatus() {
+    const savedUser = localStorage.getItem('currentUser');
+    if (savedUser) {
+        currentUser = JSON.parse(savedUser);
+        showMainApp();
+        updateAuthUI();
+        updateProfileDisplay();
+    } else {
+        showLoginRequired();
+    }
+}
+
+function showLoginRequired() {
+    document.getElementById('loginRequired').style.display = 'flex';
+    document.getElementById('mainContent').style.display = 'none';
+    
+    // Hide navigation links
+    const navButtons = document.querySelectorAll('.nav-links .nav-btn:not(#authBtn)');
+    navButtons.forEach(btn => btn.style.display = 'none');
+}
+
+function showMainApp() {
+    document.getElementById('loginRequired').style.display = 'none';
+    document.getElementById('mainContent').style.display = 'block';
+    
+    // Show navigation links
+    const navButtons = document.querySelectorAll('.nav-links .nav-btn:not(#authBtn)');
+    navButtons.forEach(btn => btn.style.display = 'inline-block');
+    
+    // Show home section by default
+    showSection('home');
+}
+
+function updateAuthUI() {
+    const authBtn = document.getElementById('authBtn');
+    if (currentUser) {
+        authBtn.textContent = currentUser.name.split(' ')[0];
+        authBtn.onclick = () => showSection('profile');
+    } else {
+        authBtn.textContent = 'Login';
+        authBtn.onclick = showAuth;
+    }
+}
+
+function logout() {
+    currentUser = null;
+    localStorage.removeItem('currentUser');
+    showLoginRequired();
+    updateAuthUI();
+    updateProfileDisplay();
+    showToast('Logged out successfully', 'success');
+}
+
+function updateProfileDisplay() {
+    if (currentUser) {
+        document.getElementById('profileName').textContent = currentUser.name;
+        document.getElementById('profileLocation').textContent = currentUser.city;
+        document.getElementById('profileAge').textContent = currentUser.age;
+        document.getElementById('profileDisability').textContent = 
+            currentUser.disability || 'Not specified';
+        document.getElementById('profileMemo').textContent = 
+            currentUser.memo || 'No description provided';
+        
+        // Set initials
+        const initials = currentUser.name.split(' ').map(n => n[0]).join('');
+        document.getElementById('profileInitials').textContent = initials;
+    } else {
+        document.getElementById('profileName').textContent = 'Please log in to view your profile';
+        document.getElementById('profileLocation').textContent = '';
+        document.getElementById('profileAge').textContent = '-';
+        document.getElementById('profileDisability').textContent = '-';
+        document.getElementById('profileMemo').textContent = '-';
+        document.getElementById('profileInitials').textContent = '?';
+    }
+}
+
+// Speech Recognition Functions
+function startRecording() {
+    if (!recognition) {
+        showToast('Speech recognition not available', 'error');
+        return;
+    }
+    
+    if (!isRecording) {
+        recognition.start();
+        isRecording = true;
+        document.getElementById('startRecording').disabled = true;
+        document.getElementById('stopRecording').disabled = false;
+        showToast('Recording started...', 'success');
+        announceToScreenReader('Voice recording started');
+    }
+}
+
+function stopRecording() {
+    if (recognition && isRecording) {
+        recognition.stop();
+        isRecording = false;
+        document.getElementById('startRecording').disabled = false;
+        document.getElementById('stopRecording').disabled = true;
+        showToast('Recording stopped', 'success');
+        announceToScreenReader('Voice recording stopped');
+    }
+}
+
+function handleSpeechResult(event) {
+    let finalTranscript = '';
+    let interimTranscript = '';
+    
+    for (let i = event.resultIndex; i < event.results.length; i++) {
+        const transcript = event.results[i][0].transcript;
+        if (event.results[i].isFinal) {
+            finalTranscript += transcript;
+        } else {
+            interimTranscript += transcript;
+        }
+    }
+    
+    const notesText = document.getElementById('notesText');
+    if (finalTranscript) {
+        notesText.value += finalTranscript + ' ';
+    }
+}
+
+function handleSpeechError(event) {
+    console.error('Speech recognition error:', event.error);
+    showToast('Speech recognition error: ' + event.error, 'error');
+    stopRecording();
+}
+
+function handleSpeechEnd() {
+    isRecording = false;
+    document.getElementById('startRecording').disabled = false;
+    document.getElementById('stopRecording').disabled = true;
+}
+
+// Test Speech Synthesis Function
+function testSpeechSynthesis() {
+    console.log('Testing speech synthesis...');
+    
+    if (!synthesis) {
+        showToast('Speech synthesis not available', 'error');
+        return;
+    }
+    
+    const testText = 'Hello! This is a test of the speech synthesis. If you can hear this, the voice system is working correctly.';
+    const utterance = new SpeechSynthesisUtterance(testText);
+    
+    utterance.rate = speechRate;
+    utterance.pitch = speechPitch;
+    utterance.volume = 0.9;
+    
+    if (selectedVoice) {
+        utterance.voice = selectedVoice;
+        console.log('Using voice:', selectedVoice.name);
+    }
+    
+    utterance.onstart = () => {
+        console.log('Test speech started');
+        showToast('Testing speech...', 'success');
+    };
+    
+    utterance.onend = () => {
+        console.log('Test speech ended');
+        showToast('Speech test completed', 'success');
+    };
+    
+    utterance.onerror = (event) => {
+        console.error('Test speech error:', event);
+        showToast('Speech test failed: ' + event.error, 'error');
+    };
+    
+    console.log('Starting speech synthesis...');
+    synthesis.speak(utterance);
+}
+
+// PDF Upload and Text-to-Speech Functions
+async function handlePdfUpload(event) {
+    console.log('PDF upload started');
+    const file = event.target.files[0];
+    
+    if (!file) {
+        showToast('No file selected', 'error');
+        return;
+    }
+    
+    if (file.type !== 'application/pdf') {
+        showToast('Please select a PDF file', 'error');
+        console.log('File type:', file.type);
+        return;
+    }
+    
+    console.log('Processing PDF:', file.name, 'Size:', file.size);
+    showLoading(true);
+    document.getElementById('pdfStatus').textContent = 'Processing...';
+    
+    try {
+        const formData = new FormData();
+        formData.append('pdf', file);
+        
+        console.log('Sending request to /extract-text');
+        const response = await fetch('/extract-text', {
+            method: 'POST',
+            body: formData
+        });
+        
+        console.log('Response status:', response.status);
+        
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('Server error:', errorText);
+            throw new Error(`Server error: ${response.status} - ${errorText}`);
+        }
+        
+        const data = await response.json();
+        console.log('Extracted text length:', data.text ? data.text.length : 0);
+        console.log('First 100 chars:', data.text ? data.text.substring(0, 100) : 'No text');
+        
+        currentPdfText = data.text;
+        
+        // Display PDF info and text
+        document.getElementById('pdfFileName').textContent = file.name;
+        document.getElementById('pdfStatus').textContent = 'Ready to read';
+        document.getElementById('pdfTextContent').textContent = currentPdfText;
+        document.getElementById('pdfControls').style.display = 'block';
+        
+        showToast('PDF loaded successfully!', 'success');
+        
+    } catch (error) {
+        console.error('PDF processing error:', error);
+        showToast('Failed to process PDF: ' + error.message, 'error');
+        document.getElementById('pdfStatus').textContent = 'Error';
+        
+        // Fallback: try to use sample text for testing
+        console.log('Using fallback sample text');
+        currentPdfText = 'This is a sample text for testing the text-to-speech functionality. The PDF processing failed, but you can still test the speech synthesis with this sample content.';
+        document.getElementById('pdfFileName').textContent = file.name + ' (Sample Text)';
+        document.getElementById('pdfStatus').textContent = 'Using sample text';
+        document.getElementById('pdfTextContent').textContent = currentPdfText;
+        document.getElementById('pdfControls').style.display = 'block';
+        showToast('Using sample text for testing', 'success');
+    } finally {
+        showLoading(false);
+    }
+}
+
+function readPdfAloud() {
+    console.log('readPdfAloud called');
+    console.log('currentPdfText:', currentPdfText);
+    console.log('currentPdfText length:', currentPdfText ? currentPdfText.length : 0);
+    
+    if (!currentPdfText || !currentPdfText.trim()) {
+        showToast('No PDF text to read. Please upload a PDF first.', 'error');
+        console.log('No PDF text available');
+        return;
+    }
+    
+    if (isPdfSpeaking) {
+        // Resume if paused
+        if (synthesis.paused) {
+            synthesis.resume();
+            updatePdfSpeechControls(true);
+            return;
+        }
+        // Stop if already speaking
+        stopPdfSpeech();
+        return;
+    }
+    
+    console.log('Creating speech utterance...');
+    
+    // Create new utterance with friendly settings
+    pdfUtterance = new SpeechSynthesisUtterance(currentPdfText);
+    pdfUtterance.rate = speechRate;
+    pdfUtterance.pitch = speechPitch;
+    pdfUtterance.volume = 0.9; // Slightly softer volume
+    
+    // Use selected voice or default to a friendly one
+    if (selectedVoice) {
+        pdfUtterance.voice = selectedVoice;
+        console.log('Using selected voice:', selectedVoice.name);
+    } else {
+        console.log('No voice selected, using default');
+    }
+    
+    // Set up event handlers
+    pdfUtterance.onstart = () => {
+        isPdfSpeaking = true;
+        updatePdfSpeechControls(true);
+        document.getElementById('readingProgress').style.display = 'block';
+        document.getElementById('progressText').textContent = 'Reading PDF...';
+        announceToScreenReader('Started reading PDF aloud');
+    };
+    
+    pdfUtterance.onend = () => {
+        isPdfSpeaking = false;
+        updatePdfSpeechControls(false);
+        document.getElementById('readingProgress').style.display = 'none';
+        document.getElementById('progressFill').style.width = '0%';
+        announceToScreenReader('Finished reading PDF');
+    };
+    
+    pdfUtterance.onerror = (event) => {
+        console.error('Speech synthesis error:', event);
+        showToast('Speech error occurred', 'error');
+        stopPdfSpeech();
+    };
+    
+    // Start speaking
+    synthesis.speak(pdfUtterance);
+    
+    // Simulate progress (since we can't get real progress from speech synthesis)
+    simulateReadingProgress();
+}
+
+function pausePdfSpeech() {
+    if (isPdfSpeaking && !synthesis.paused) {
+        synthesis.pause();
+        updatePdfSpeechControls(false);
+        document.getElementById('progressText').textContent = 'Paused';
+        announceToScreenReader('PDF reading paused');
+    }
+}
+
+function stopPdfSpeech() {
+    if (isPdfSpeaking || synthesis.speaking) {
+        synthesis.cancel();
+        isPdfSpeaking = false;
+        updatePdfSpeechControls(false);
+        document.getElementById('readingProgress').style.display = 'none';
+        document.getElementById('progressFill').style.width = '0%';
+        announceToScreenReader('PDF reading stopped');
+    }
+}
+
+function updateSpeechRate(event) {
+    speechRate = parseFloat(event.target.value);
+    document.getElementById('rateValue').textContent = speechRate + 'x';
+    
+    // If currently speaking, update the rate
+    if (isPdfSpeaking && pdfUtterance) {
+        // Note: Changing rate mid-speech requires restarting
+        const wasPlaying = !synthesis.paused;
+        if (wasPlaying) {
+            synthesis.cancel();
+            // Small delay to ensure cancellation completes
+            setTimeout(() => {
+                pdfUtterance.rate = speechRate;
+                pdfUtterance.pitch = speechPitch;
+                if (selectedVoice) pdfUtterance.voice = selectedVoice;
+                synthesis.speak(pdfUtterance);
+            }, 100);
+        }
+    }
+}
+
+function updateSpeechPitch(event) {
+    speechPitch = parseFloat(event.target.value);
+    document.getElementById('pitchValue').textContent = speechPitch + 'x';
+    
+    // If currently speaking, update the pitch
+    if (isPdfSpeaking && pdfUtterance) {
+        const wasPlaying = !synthesis.paused;
+        if (wasPlaying) {
+            synthesis.cancel();
+            setTimeout(() => {
+                pdfUtterance.rate = speechRate;
+                pdfUtterance.pitch = speechPitch;
+                if (selectedVoice) pdfUtterance.voice = selectedVoice;
+                synthesis.speak(pdfUtterance);
+            }, 100);
+        }
+    }
+}
+
+function updateSelectedVoice(event) {
+    const voiceIndex = event.target.value;
+    if (voiceIndex === '') {
+        selectedVoice = null;
+    } else {
+        const englishVoices = availableVoices.filter(voice => 
+            voice.lang.startsWith('en') || voice.lang === 'en-US' || voice.lang === 'en-GB'
+        );
+        selectedVoice = englishVoices[parseInt(voiceIndex)];
+    }
+    
+    // Test the voice with a short phrase
+    if (selectedVoice) {
+        const testUtterance = new SpeechSynthesisUtterance('Hello, this is your selected voice.');
+        testUtterance.voice = selectedVoice;
+        testUtterance.rate = speechRate;
+        testUtterance.pitch = speechPitch;
+        testUtterance.volume = 0.7;
+        synthesis.speak(testUtterance);
+    }
+}
+
+function updatePdfSpeechControls(isPlaying) {
+    document.getElementById('playPdfText').disabled = isPlaying;
+    document.getElementById('pausePdfSpeech').disabled = !isPlaying;
+    document.getElementById('stopPdfSpeech').disabled = !isPlaying;
+    
+    // Update button text
+    const playBtn = document.getElementById('playPdfText');
+    if (isPlaying) {
+        playBtn.innerHTML = '⏸️ Pause PDF';
+    } else {
+        playBtn.innerHTML = '🔊 Read PDF Aloud';
+    }
+}
+
+function simulateReadingProgress() {
+    if (!isPdfSpeaking) return;
+    
+    const progressFill = document.getElementById('progressFill');
+    const textLength = currentPdfText.length;
+    const estimatedDuration = (textLength / (speechRate * 200)) * 1000; // Rough estimate
+    const updateInterval = 100;
+    const increment = (updateInterval / estimatedDuration) * 100;
+    
+    let currentProgress = 0;
+    
+    const progressInterval = setInterval(() => {
+        if (!isPdfSpeaking || synthesis.paused) {
+            clearInterval(progressInterval);
+            return;
+        }
+        
+        currentProgress += increment;
+        if (currentProgress >= 100) {
+            currentProgress = 100;
+            clearInterval(progressInterval);
+        }
+        
+        progressFill.style.width = currentProgress + '%';
+    }, updateInterval);
+}
+
+// Text-to-Speech Functions for Notes
+function readNotesAloud() {
+    const text = document.getElementById('notesText').value;
+    if (!text.trim()) {
+        showToast('No text to read', 'error');
+        return;
+    }
+    
+    if (isSpeaking) {
+        synthesis.cancel();
+        isSpeaking = false;
+        document.getElementById('playNotes').disabled = false;
+        document.getElementById('pauseNotesSpeech').disabled = true;
+        return;
+    }
+    
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.rate = speechRate;
+    utterance.pitch = speechPitch;
+    utterance.volume = 0.9; // Softer volume
+    
+    // Use selected voice or default friendly voice
+    if (selectedVoice) {
+        utterance.voice = selectedVoice;
+    }
+    
+    utterance.onstart = () => {
+        isSpeaking = true;
+        document.getElementById('playNotes').disabled = true;
+        document.getElementById('pauseNotesSpeech').disabled = false;
+        announceToScreenReader('Started reading notes aloud');
+    };
+    
+    utterance.onend = () => {
+        isSpeaking = false;
+        document.getElementById('playNotes').disabled = false;
+        document.getElementById('pauseNotesSpeech').disabled = true;
+        announceToScreenReader('Finished reading notes');
+    };
+    
+    synthesis.speak(utterance);
+}
+
+function pauseNotesSpeech() {
+    if (isSpeaking) {
+        synthesis.cancel();
+        isSpeaking = false;
+        document.getElementById('playNotes').disabled = false;
+        document.getElementById('pauseNotesSpeech').disabled = true;
+        announceToScreenReader('Notes speech paused');
+    }
+}
+
+// Notes Management
+function saveNotes() {
+    const text = document.getElementById('notesText').value;
+    if (!text.trim()) {
+        showToast('No notes to save', 'error');
+        return;
+    }
+    
+    const note = {
+        id: Date.now().toString(),
+        content: text,
+        date: new Date().toLocaleString(),
+        userId: currentUser ? currentUser.id : 'anonymous'
+    };
+    
+    const savedNotes = JSON.parse(localStorage.getItem('savedNotes') || '[]');
+    savedNotes.unshift(note);
+    localStorage.setItem('savedNotes', JSON.stringify(savedNotes));
+    
+    loadSavedNotes();
+    showToast('Notes saved successfully!', 'success');
+    announceToScreenReader('Notes saved');
+}
+
+function clearNotes() {
+    if (confirm('Are you sure you want to clear all notes?')) {
+        document.getElementById('notesText').value = '';
+        showToast('Notes cleared', 'success');
+        announceToScreenReader('Notes cleared');
+    }
+}
+
+function loadSavedNotes() {
+    const savedNotes = JSON.parse(localStorage.getItem('savedNotes') || '[]');
+    const userNotes = currentUser ? 
+        savedNotes.filter(note => note.userId === currentUser.id) : 
+        savedNotes.filter(note => note.userId === 'anonymous');
+    
+    const notesList = document.getElementById('notesList');
+    notesList.innerHTML = '';
+    
+    if (userNotes.length === 0) {
+        notesList.innerHTML = '<p>No saved notes yet.</p>';
+        return;
+    }
+    
+    userNotes.forEach(note => {
+        const noteElement = document.createElement('div');
+        noteElement.className = 'note-item';
+        noteElement.innerHTML = `
+            <div class="note-date">${note.date}</div>
+            <div class="note-content">${note.content.substring(0, 100)}${note.content.length > 100 ? '...' : ''}</div>
+            <div class="note-actions">
+                <button onclick="loadNote('${note.id}')" aria-label="Load this note">Load</button>
+                <button onclick="deleteNote('${note.id}')" aria-label="Delete this note">Delete</button>
+                <button onclick="readNoteAloud('${note.id}')" aria-label="Read this note aloud">🔊</button>
+            </div>
+        `;
+        notesList.appendChild(noteElement);
+    });
+}
+
+function loadNote(noteId) {
+    const savedNotes = JSON.parse(localStorage.getItem('savedNotes') || '[]');
+    const note = savedNotes.find(n => n.id === noteId);
+    if (note) {
+        document.getElementById('notesText').value = note.content;
+        showToast('Note loaded', 'success');
+    }
+}
+
+function deleteNote(noteId) {
+    if (confirm('Are you sure you want to delete this note?')) {
+        const savedNotes = JSON.parse(localStorage.getItem('savedNotes') || '[]');
+        const filteredNotes = savedNotes.filter(n => n.id !== noteId);
+        localStorage.setItem('savedNotes', JSON.stringify(filteredNotes));
+        loadSavedNotes();
+        showToast('Note deleted', 'success');
+    }
+}
+
+function readNoteAloud(noteId) {
+    const savedNotes = JSON.parse(localStorage.getItem('savedNotes') || '[]');
+    const note = savedNotes.find(n => n.id === noteId);
+    if (note) {
+        const utterance = new SpeechSynthesisUtterance(note.content);
+        utterance.rate = speechRate;
+        utterance.pitch = speechPitch;
+        utterance.volume = 0.9;
+        
+        // Use selected voice
+        if (selectedVoice) {
+            utterance.voice = selectedVoice;
+        }
+        
+        synthesis.speak(utterance);
+    }
+}
+
+// File Upload and Flashcard Generation
+function handleFileSelect(event) {
+    const file = event.target.files[0];
+    const generateBtn = document.getElementById('generateBtn');
+    
+    if (file && file.type === 'application/pdf') {
+        generateBtn.disabled = false;
+        showToast('PDF file selected: ' + file.name, 'success');
+    } else {
+        generateBtn.disabled = true;
+        if (file) {
+            showToast('Please select a PDF file', 'error');
+        }
+    }
+}
+
+async function uploadPDF() {
+    const fileInput = document.getElementById('pdfFile');
+    const file = fileInput.files[0];
+    
+    if (!file) {
+        showToast('Please select a PDF file first', 'error');
+        return;
+    }
+    
+    showLoading(true);
+    
+    try {
+        const formData = new FormData();
+        formData.append('pdf', file);
+        
+        const response = await fetch('/upload', {
+            method: 'POST',
+            body: formData
+        });
+        
+        if (!response.ok) {
+            throw new Error('Upload failed');
+        }
+        
+        const data = await response.json();
+        flashcards = data.flashcards || generateSampleFlashcards(file.name);
+        currentCardIndex = 0;
+        
+        displayFlashcards();
+        showToast('Flashcards generated successfully!', 'success');
+        
+    } catch (error) {
+        console.error('Upload error:', error);
+        // Generate sample flashcards as fallback
+        flashcards = generateSampleFlashcards(file.name);
+        currentCardIndex = 0;
+        displayFlashcards();
+        showToast('Generated sample flashcards (server unavailable)', 'success');
+    } finally {
+        showLoading(false);
+    }
+}
+
+function generateSampleFlashcards(filename) {
+    // Generate sample flashcards based on filename or generic content
+    return [
+        {
+            question: "What is the main topic of this document?",
+            answer: `The document "${filename}" covers key concepts and important information for learning.`
+        },
+        {
+            question: "What are the key learning objectives?",
+            answer: "Understanding the fundamental concepts, applying knowledge practically, and retaining information effectively."
+        },
+        {
+            question: "How can this information be applied?",
+            answer: "The concepts can be applied through practice exercises, real-world scenarios, and continued study."
+        },
+        {
+            question: "What are the main benefits of studying this material?",
+            answer: "Enhanced understanding, improved skills, and better preparation for assessments or practical applications."
+        },
+        {
+            question: "What should be reviewed regularly?",
+            answer: "Key definitions, important formulas or concepts, and practical examples from the material."
+        }
+    ];
+}
+
+function displayFlashcards() {
+    if (flashcards.length === 0) return;
+    
+    document.getElementById('flashcardControls').style.display = 'flex';
+    updateFlashcardDisplay();
+    updateCardCounter();
+    updateNavigationButtons();
+}
+
+function updateFlashcardDisplay() {
+    const flashcardDisplay = document.getElementById('flashcardDisplay');
+    const card = flashcards[currentCardIndex];
+    
+    flashcardDisplay.innerHTML = `
+        <div class="flashcard" onclick="flipCurrentCard()" tabindex="0" 
+             role="button" aria-label="Flashcard ${currentCardIndex + 1}. Click to flip.">
+            <div class="flashcard-content" id="cardContent">
+                ${card.question}
+            </div>
+            <div class="card-hint">Click to reveal answer</div>
+        </div>
+    `;
+    
+    // Add keyboard support for flashcard
+    const flashcardElement = flashcardDisplay.querySelector('.flashcard');
+    flashcardElement.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            flipCurrentCard();
+        }
+    });
+}
+
+function flipCurrentCard() {
+    const flashcardElement = document.querySelector('.flashcard');
+    const cardContent = document.getElementById('cardContent');
+    const card = flashcards[currentCardIndex];
+    
+    if (flashcardElement.classList.contains('flipped')) {
+        // Show question
+        cardContent.textContent = card.question;
+        flashcardElement.classList.remove('flipped');
+        document.querySelector('.card-hint').textContent = 'Click to reveal answer';
+        announceToScreenReader('Showing question: ' + card.question);
+    } else {
+        // Show answer
+        cardContent.textContent = card.answer;
+        flashcardElement.classList.add('flipped');
+        document.querySelector('.card-hint').textContent = 'Click to see question';
+        announceToScreenReader('Showing answer: ' + card.answer);
+    }
+}
+
+function navigateCard(direction) {
+    const newIndex = currentCardIndex + direction;
+    
+    if (newIndex >= 0 && newIndex < flashcards.length) {
+        currentCardIndex = newIndex;
+        updateFlashcardDisplay();
+        updateCardCounter();
+        updateNavigationButtons();
+        
+        announceToScreenReader(`Card ${currentCardIndex + 1} of ${flashcards.length}`);
+    }
+}
+
+function updateCardCounter() {
+    document.getElementById('cardCounter').textContent = 
+        `Card ${currentCardIndex + 1} of ${flashcards.length}`;
+}
+
+function updateNavigationButtons() {
+    document.getElementById('prevCard').disabled = currentCardIndex === 0;
+    document.getElementById('nextCard').disabled = currentCardIndex === flashcards.length - 1;
+}
+
+// Utility Functions
+function showLoading(show) {
+    document.getElementById('loadingIndicator').style.display = show ? 'block' : 'none';
+}
+
+function showToast(message, type = 'info') {
+    const toast = document.getElementById('toast');
+    toast.textContent = message;
+    toast.className = `toast ${type} show`;
+    
+    setTimeout(() => {
+        toast.classList.remove('show');
+    }, 3000);
+}
+
+function announceToScreenReader(message) {
+    const announcement = document.createElement('div');
+    announcement.setAttribute('aria-live', 'polite');
+    announcement.setAttribute('aria-atomic', 'true');
+    announcement.className = 'sr-only';
+    announcement.textContent = message;
+    
+    document.body.appendChild(announcement);
+    
+    setTimeout(() => {
+        document.body.removeChild(announcement);
+    }, 1000);
+}
+
+function editProfile() {
+    if (!currentUser) {
+        showToast('Please log in first', 'error');
+        return;
+    }
+    
+    // Simple implementation - in a real app, this would open an edit form
+    const newName = prompt('Enter new name:', currentUser.name);
+    if (newName && newName.trim()) {
+        currentUser.name = newName.trim();
+        
+        // Update in localStorage
+        const users = JSON.parse(localStorage.getItem('users') || '[]');
+        const userIndex = users.findIndex(u => u.id === currentUser.id);
+        if (userIndex !== -1) {
+            users[userIndex] = currentUser;
+            localStorage.setItem('users', JSON.stringify(users));
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+        }
+        
+        updateAuthUI();
+        updateProfileDisplay();
+        showToast('Profile updated successfully!', 'success');
+    }
+}
+
+// Check Bedrock AI status
+async function checkBedrockStatus() {
+    const statusElement = document.getElementById('aiStatus');
+    const iconElement = document.getElementById('aiStatusIcon');
+    const textElement = document.getElementById('aiStatusText');
+    
+    try {
+        const response = await fetch('/bedrock-status');
+        const data = await response.json();
+        
+        if (data.status === 'connected') {
+            statusElement.className = 'ai-status connected';
+            iconElement.textContent = '🤖✅';
+            textElement.textContent = `AI Connected: ${data.model.split('.')[1]} (${data.region})`;
+        } else {
+            statusElement.className = 'ai-status fallback';
+            iconElement.textContent = '🤖⚠️';
+            textElement.textContent = 'AI Unavailable - Using Rule-Based Generation';
+        }
+    } catch (error) {
+        console.error('Failed to check Bedrock status:', error);
+        statusElement.className = 'ai-status fallback';
+        iconElement.textContent = '🤖⚠️';
+        textElement.textContent = 'AI Status Unknown - Using Rule-Based Generation';
+    }
+}
+
+// Initialize drag and drop for file uploads
+document.addEventListener('DOMContentLoaded', function() {
+    // Flashcards upload area
+    const uploadArea = document.getElementById('uploadArea');
+    if (uploadArea) {
+        setupDragAndDrop(uploadArea, 'pdfFile', handleFileSelect);
+    }
+    
+    // Notes PDF upload area
+    const pdfUploadArea = document.querySelector('.pdf-upload-area');
+    if (pdfUploadArea) {
+        setupDragAndDrop(pdfUploadArea, 'notesPdfFile', handlePdfUpload);
+    }
+});
+
+function setupDragAndDrop(uploadArea, fileInputId, handleFunction) {
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        uploadArea.addEventListener(eventName, preventDefaults, false);
+    });
+    
+    function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+    
+    ['dragenter', 'dragover'].forEach(eventName => {
+        uploadArea.addEventListener(eventName, highlight, false);
+    });
+    
+    ['dragleave', 'drop'].forEach(eventName => {
+        uploadArea.addEventListener(eventName, unhighlight, false);
+    });
+    
+    function highlight(e) {
+        uploadArea.classList.add('highlight');
+    }
+    
+    function unhighlight(e) {
+        uploadArea.classList.remove('highlight');
+    }
+    
+    uploadArea.addEventListener('drop', handleDrop, false);
+    
+    function handleDrop(e) {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+        
+        if (files.length > 0) {
+            const fileInput = document.getElementById(fileInputId);
+            fileInput.files = files;
+            
+            // Create a synthetic event object
+            const syntheticEvent = {
+                target: { files: files }
+            };
+            
+            handleFunction(syntheticEvent);
+        }
+    }
+}

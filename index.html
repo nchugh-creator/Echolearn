@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EchoLearn - Learning Platform for Students with Disabilities</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar" role="navigation" aria-label="Main navigation">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <h1>EchoLearn</h1>
+            </div>
+            <div class="nav-links" id="navLinks">
+                <button class="nav-btn" onclick="showSection('home')" aria-label="Go to home page" style="display: none;">Home</button>
+                <button class="nav-btn" onclick="showSection('notes')" aria-label="Go to notes section" style="display: none;">Notes</button>
+                <button class="nav-btn" onclick="showSection('flashcards')" aria-label="Go to flashcards section" style="display: none;">Flashcards</button>
+                <button class="nav-btn" onclick="showSection('profile')" aria-label="Go to profile page" style="display: none;">Profile</button>
+                <button class="nav-btn" id="authBtn" onclick="showAuth()" aria-label="Login or signup">Login</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Authentication Modal -->
+    <div id="authModal" class="modal" role="dialog" aria-labelledby="authTitle" aria-hidden="true">
+        <div class="modal-content">
+            <span class="close" onclick="closeAuth()" aria-label="Close authentication modal">&times;</span>
+            <h2 id="authTitle">Login / Sign Up</h2>
+            
+            <div class="auth-tabs">
+                <button class="tab-btn active" onclick="showLogin()" aria-label="Switch to login form">Login</button>
+                <button class="tab-btn" onclick="showSignup()" aria-label="Switch to signup form">Sign Up</button>
+            </div>
+
+            <!-- Login Form -->
+            <form id="loginForm" class="auth-form">
+                <div class="form-group">
+                    <label for="loginEmail">Email:</label>
+                    <input type="email" id="loginEmail" required aria-describedby="loginEmailHelp">
+                    <small id="loginEmailHelp">Enter your registered email address</small>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Password:</label>
+                    <input type="password" id="loginPassword" required aria-describedby="loginPasswordHelp">
+                    <small id="loginPasswordHelp">Enter your password</small>
+                </div>
+                <button type="submit" class="auth-submit-btn">Login</button>
+            </form>
+
+            <!-- Signup Form -->
+            <form id="signupForm" class="auth-form" style="display: none;">
+                <div class="form-group">
+                    <label for="signupName">Full Name:</label>
+                    <input type="text" id="signupName" required aria-describedby="signupNameHelp">
+                    <small id="signupNameHelp">Enter your full name</small>
+                </div>
+                <div class="form-group">
+                    <label for="signupEmail">Email:</label>
+                    <input type="email" id="signupEmail" required aria-describedby="signupEmailHelp">
+                    <small id="signupEmailHelp">Enter a valid email address</small>
+                </div>
+                <div class="form-group">
+                    <label for="signupPassword">Password:</label>
+                    <input type="password" id="signupPassword" required aria-describedby="signupPasswordHelp">
+                    <small id="signupPasswordHelp">Choose a strong password</small>
+                </div>
+                <div class="form-group">
+                    <label for="signupCity">City:</label>
+                    <input type="text" id="signupCity" required aria-describedby="signupCityHelp">
+                    <small id="signupCityHelp">Enter your city</small>
+                </div>
+                <div class="form-group">
+                    <label for="signupAge">Age:</label>
+                    <input type="number" id="signupAge" min="13" max="100" required aria-describedby="signupAgeHelp">
+                    <small id="signupAgeHelp">Enter your age (13-100)</small>
+                </div>
+                <div class="form-group">
+                    <label for="signupDisability">Accessibility Needs (Optional):</label>
+                    <select id="signupDisability" aria-describedby="signupDisabilityHelp">
+                        <option value="">Select if applicable</option>
+                        <option value="visual">Visual Impairment</option>
+                        <option value="hearing">Hearing Impairment</option>
+                        <option value="mobility">Mobility Impairment</option>
+                        <option value="cognitive">Cognitive Disability</option>
+                        <option value="learning">Learning Disability</option>
+                        <option value="other">Other</option>
+                    </select>
+                    <small id="signupDisabilityHelp">This helps us customize your experience</small>
+                </div>
+                <div class="form-group">
+                    <label for="signupMemo">About Me:</label>
+                    <textarea id="signupMemo" rows="3" aria-describedby="signupMemoHelp"></textarea>
+                    <small id="signupMemoHelp">Tell us a bit about yourself (optional)</small>
+                </div>
+                <button type="submit" class="auth-submit-btn">Sign Up</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Login Required Overlay -->
+    <div id="loginRequired" class="login-required-overlay">
+        <div class="login-required-content">
+            <div class="brand-logo">
+                <h1>🎓 EchoLearn</h1>
+                <p class="tagline">Your Voice, Your Learning, Your Way</p>
+            </div>
+            
+            <div class="welcome-message">
+                <h2>Welcome to EchoLearn</h2>
+                <p>An accessibility-focused learning platform designed specifically for students with disabilities.</p>
+                
+                <div class="feature-highlights">
+                    <div class="highlight-item">
+                        <span class="highlight-icon">🎤</span>
+                        <span>Speech-to-Text Notes</span>
+                    </div>
+                    <div class="highlight-item">
+                        <span class="highlight-icon">🔊</span>
+                        <span>Text-to-Speech Reading</span>
+                    </div>
+                    <div class="highlight-item">
+                        <span class="highlight-icon">🤖</span>
+                        <span>AI-Powered Flashcards</span>
+                    </div>
+                    <div class="highlight-item">
+                        <span class="highlight-icon">♿</span>
+                        <span>Fully Accessible Design</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="auth-prompt">
+                <p>Please log in or create an account to access your personalized learning experience.</p>
+                <button class="auth-prompt-btn" onclick="showAuth()" aria-label="Open login or signup">
+                    Get Started
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="main-content" role="main" id="mainContent" style="display: none;">
+        <!-- Home Section -->
+        <section id="homeSection" class="content-section active">
+            <div class="welcome-container">
+                <h2>Welcome to EchoLearn</h2>
+                <p>Your personalized learning platform designed for accessibility and inclusion.</p>
+                
+                <div class="feature-grid">
+                    <div class="feature-card" onclick="showSection('notes')">
+                        <h3>Smart Notes</h3>
+                        <p>Speech-to-text and text-to-speech capabilities for seamless note-taking</p>
+                    </div>
+                    <div class="feature-card" onclick="showSection('flashcards')">
+                        <h3>AI Flashcards</h3>
+                        <p>Upload PDFs and generate interactive flashcards automatically</p>
+                    </div>
+                    <div class="feature-card" onclick="showSection('profile')">
+                        <h3>Your Profile</h3>
+                        <p>Manage your personal information and learning preferences</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Notes Section -->
+        <section id="notesSection" class="content-section">
+            <h2>Smart Notes</h2>
+            
+            <div class="notes-layout">
+                <!-- Left Side: PDF Text-to-Speech -->
+                <div class="pdf-speech-section">
+                    <h3>📄 PDF Text-to-Speech</h3>
+                    
+                    <div class="pdf-upload-area">
+                        <input type="file" id="notesPdfFile" accept=".pdf" aria-label="Upload PDF for text-to-speech">
+                        <div class="upload-text">
+                            <p>📄 Upload PDF to read aloud</p>
+                            <small>Drag & drop or click to browse</small>
+                        </div>
+                    </div>
+                    
+                    <div id="pdfControls" class="pdf-controls" style="display: none;">
+                        <div class="pdf-info">
+                            <span id="pdfFileName">No file selected</span>
+                            <span id="pdfStatus">Ready</span>
+                        </div>
+                        
+                        <div class="speech-controls">
+                            <button id="testSpeech" class="control-btn" aria-label="Test speech synthesis">
+                                🎵 Test Voice
+                            </button>
+                            <button id="playPdfText" class="control-btn" aria-label="Read PDF aloud">
+                                🔊 Read PDF Aloud
+                            </button>
+                            <button id="pausePdfSpeech" class="control-btn" disabled aria-label="Pause PDF reading">
+                                ⏸️ Pause
+                            </button>
+                            <button id="stopPdfSpeech" class="control-btn" disabled aria-label="Stop PDF reading">
+                                ⏹️ Stop
+                            </button>
+                        </div>
+                        
+                        <div class="speech-settings">
+                            <div class="setting-row">
+                                <label for="voiceSelect">Voice:</label>
+                                <select id="voiceSelect" aria-label="Select voice">
+                                    <option value="">Loading voices...</option>
+                                </select>
+                            </div>
+                            <div class="setting-row">
+                                <label for="speechRate">Speed:</label>
+                                <input type="range" id="speechRate" min="0.5" max="2" step="0.1" value="1" aria-label="Speech rate">
+                                <span id="rateValue">1x</span>
+                            </div>
+                            <div class="setting-row">
+                                <label for="speechPitch">Pitch:</label>
+                                <input type="range" id="speechPitch" min="0.5" max="2" step="0.1" value="1" aria-label="Speech pitch">
+                                <span id="pitchValue">1x</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="pdfTextDisplay" class="pdf-text-display">
+                        <div id="pdfTextContent" class="pdf-text-content">
+                            Upload a PDF to see its content here and have it read aloud.
+                        </div>
+                        <div id="readingProgress" class="reading-progress" style="display: none;">
+                            <div class="progress-bar">
+                                <div id="progressFill" class="progress-fill"></div>
+                            </div>
+                            <span id="progressText">Reading...</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Right Side: Notes -->
+                <div class="notes-section">
+                    <h3>📝 Your Notes</h3>
+                    
+                    <div class="notes-controls">
+                        <div class="speech-controls">
+                            <button id="startRecording" class="control-btn" aria-label="Start voice recording">
+                                🎤 Start Recording
+                            </button>
+                            <button id="stopRecording" class="control-btn" disabled aria-label="Stop voice recording">
+                                ⏹️ Stop Recording
+                            </button>
+                            <button id="playNotes" class="control-btn" aria-label="Read notes aloud">
+                                🔊 Read Notes
+                            </button>
+                            <button id="pauseNotesSpeech" class="control-btn" disabled aria-label="Pause notes reading">
+                                ⏸️ Pause
+                            </button>
+                        </div>
+                        
+                        <div class="notes-actions">
+                            <button id="saveNotes" class="control-btn" aria-label="Save current notes">
+                                💾 Save Notes
+                            </button>
+                            <button id="clearNotes" class="control-btn" aria-label="Clear all notes">
+                                🗑️ Clear
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="notes-container">
+                        <textarea id="notesText" placeholder="Start typing your notes here, or use voice recording..." 
+                                 aria-label="Notes text area" rows="12"></textarea>
+                    </div>
+
+                    <div id="savedNotesList" class="saved-notes">
+                        <h3>Saved Notes</h3>
+                        <div id="notesList"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Flashcards Section -->
+        <section id="flashcardsSection" class="content-section">
+            <h2>AI Flashcard Generator</h2>
+            
+            <div class="ai-status" id="aiStatus">
+                <div class="status-indicator">
+                    <span id="aiStatusIcon">🤖</span>
+                    <span id="aiStatusText">Checking AI status...</span>
+                </div>
+            </div>
+            
+            <div class="upload-section">
+                <div class="upload-area" id="uploadArea">
+                    <input type="file" id="pdfFile" accept=".pdf" aria-label="Upload PDF file">
+                    <div class="upload-text">
+                        <p>📄 Drop your PDF here or click to browse</p>
+                        <small>Supported format: PDF files only</small>
+                    </div>
+                </div>
+                <button id="generateBtn" onclick="uploadPDF()" class="generate-btn" disabled>
+                    Generate AI Flashcards
+                </button>
+            </div>
+
+            <div id="flashcardsContainer" class="flashcards-container">
+                <div id="flashcardControls" class="flashcard-controls" style="display: none;">
+                    <button id="prevCard" class="card-nav-btn" aria-label="Previous flashcard">← Previous</button>
+                    <span id="cardCounter">Card 1 of 1</span>
+                    <button id="nextCard" class="card-nav-btn" aria-label="Next flashcard">Next →</button>
+                </div>
+                <div id="flashcardDisplay"></div>
+            </div>
+        </section>
+
+        <!-- Profile Section -->
+        <section id="profileSection" class="content-section">
+            <h2>Your Profile</h2>
+            
+            <div id="profileContent" class="profile-container">
+                <div class="profile-card">
+                    <div class="profile-header">
+                        <div class="profile-avatar">
+                            <span id="profileInitials">?</span>
+                        </div>
+                        <div class="profile-info">
+                            <h3 id="profileName">Please log in to view your profile</h3>
+                            <p id="profileLocation"></p>
+                        </div>
+                    </div>
+                    
+                    <div class="profile-details">
+                        <div class="detail-item">
+                            <label>Age:</label>
+                            <span id="profileAge">-</span>
+                        </div>
+                        <div class="detail-item">
+                            <label>Accessibility Needs:</label>
+                            <span id="profileDisability">-</span>
+                        </div>
+                        <div class="detail-item">
+                            <label>About Me:</label>
+                            <p id="profileMemo">-</p>
+                        </div>
+                    </div>
+                    
+                    <div class="profile-actions">
+                        <button id="editProfile" class="profile-btn" onclick="editProfile()">Edit Profile</button>
+                        <button id="logoutBtn" class="profile-btn logout" onclick="logout()">Logout</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Loading Indicator -->
+    <div id="loadingIndicator" class="loading" style="display: none;" role="status" aria-live="polite">
+        <div class="spinner"></div>
+        <p>Processing...</p>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="toast" class="toast" role="alert" aria-live="assertive"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>
