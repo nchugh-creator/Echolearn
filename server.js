@@ -972,9 +972,19 @@ app.use((req, res) => {
     });
 });
 
-app.listen(PORT, () => {
-    console.log(`🚀 EchoLearn server running on http://localhost:${PORT}`);
+app.listen(PORT, '0.0.0.0', () => {
+    const networkInterfaces = require('os').networkInterfaces();
+    const localIP = Object.values(networkInterfaces)
+        .flat()
+        .find(iface => iface.family === 'IPv4' && !iface.internal)?.address;
+    
+    console.log(`🚀 EchoLearn server running on:`);
+    console.log(`   Local:    http://localhost:${PORT}`);
+    if (localIP) {
+        console.log(`   Network:  http://${localIP}:${PORT}`);
+    }
     console.log(`🌐 Production domain: ${BASE_URL}`);
     console.log(`📚 Features: PDF Flashcards, Speech-to-Text, Text-to-Speech, User Profiles`);
     console.log(`♿ Accessibility-focused learning platform for students with disabilities`);
+    console.log(`📱 Access from other devices using the Network URL above`);
 });
