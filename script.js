@@ -15,23 +15,31 @@ let speechPitch = 1;
 let selectedVoice = null;
 let availableVoices = [];
 
-// Rewards System Variables
+// Fruit Rewards System Variables
 let userBalance = 0;
+let userFruits = {
+    strawberry: 0,  // 🍓 = 5 points
+    apple: 0,       // 🍎 = 10 points  
+    orange: 0,      // 🍊 = 15 points
+    banana: 0,      // 🍌 = 20 points
+    grape: 0,       // 🍇 = 25 points
+    kiwi: 0         // 🥝 = 50 points
+};
 let userAchievements = {};
-let rewardsData = {
+let fruitData = {
     activities: {
-        note: { coins: 10, name: 'Take Notes' },
-        flashcard: { coins: 25, name: 'Generate Flashcards' },
-        study: { coins: 15, name: 'Study Session' },
-        speech: { coins: 5, name: 'Voice Recording' },
-        daily: { coins: 20, name: 'Daily Login' },
-        feedback: { coins: 50, name: 'Share Feedback' }
+        speech: { fruit: 'strawberry', emoji: '🍓', points: 5, name: 'Voice Recording' },
+        note: { fruit: 'apple', emoji: '🍎', points: 10, name: 'Take Notes' },
+        study: { fruit: 'orange', emoji: '🍊', points: 15, name: 'Study Session' },
+        daily: { fruit: 'banana', emoji: '🍌', points: 20, name: 'Daily Login' },
+        flashcard: { fruit: 'grape', emoji: '🍇', points: 25, name: 'Generate Flashcards' },
+        feedback: { fruit: 'kiwi', emoji: '🥝', points: 50, name: 'Share Feedback' }
     },
     achievements: {
-        'first-note': { target: 1, current: 0, coins: 100 },
-        'flashcard-master': { target: 10, current: 0, coins: 250 },
-        'daily-learner': { target: 7, current: 0, coins: 150 },
-        'voice-champion': { target: 50, current: 0, coins: 300 }
+        'first-note': { target: 1, current: 0, reward: { apple: 10 } },
+        'flashcard-master': { target: 10, current: 0, reward: { grape: 10 } },
+        'daily-learner': { target: 7, current: 0, reward: { banana: 7 } },
+        'voice-champion': { target: 50, current: 0, reward: { strawberry: 50 } }
     }
 };
 
@@ -1394,19 +1402,48 @@ function initializeRewards() {
 
 // Load user balance from localStorage
 function loadUserBalance() {
-    const savedBalance = localStorage.getItem('echolearn_balance');
-    userBalance = savedBalance ? parseInt(savedBalance) : 50; // Welcome bonus
-
-    // Save welcome bonus if new user
-    if (!savedBalance) {
-        saveUserBalance();
-        addTransaction('Welcome bonus', 50, 'positive');
+    const savedFruits = localStorage.getItem('echolearn_fruits');
+    if (savedFruits) {
+        userFruits = JSON.parse(savedFruits);
+    } else {
+        // Welcome bonus: give some starter fruits
+        userFruits = {
+            strawberry: 10,
+            apple: 5,
+            orange: 3,
+            banana: 2,
+            grape: 1,
+            kiwi: 1
+        };
+        saveUserFruits();
+        addTransaction('Welcome fruit basket', 0, 'positive');
     }
+    
+    // Calculate total balance from fruits
+    calculateTotalBalance();
 }
 
-// Save user balance to localStorage
+// Calculate total balance from all fruits
+function calculateTotalBalance() {
+    userBalance = 
+        (userFruits.strawberry * 5) +
+        (userFruits.apple * 10) +
+        (userFruits.orange * 15) +
+        (userFruits.banana * 20) +
+        (userFruits.grape * 25) +
+        (userFruits.kiwi * 50);
+}
+
+// Save user fruits to localStorage
+function saveUserFruits() {
+    localStorage.setItem('echolearn_fruits', JSON.stringify(userFruits));
+}
+
+// Save user balance to localStorage (for compatibility)
 function saveUserBalance() {
+    calculateTotalBalance();
     localStorage.setItem('echolearn_balance', userBalance.toString());
+    saveUserFruits();
 }
 
 // Load user achievements from localStorage
@@ -1424,24 +1461,26 @@ function saveUserAchievements() {
 
 // Award coins for activity
 function awardCoins(activity, customAmount = null) {
-    const coins = customAmount || rewardsData.activities[activity]?.coins || 0;
-    if (coins > 0) {
-        userBalance += coins;
+    const fruitInfo = fruitData.activities[activity];
+    if (fruitInfo) {
+        // Award the specific fruit for this activity
+        userFruits[fruitInfo.fruit]++;
+        calculateTotalBalance();
         saveUserBalance();
         updateBalanceDisplay();
+        updateFruitDisplay();
 
-        // Show coin animation
-        showCoinAnimation(coins);
+        // Show fruit animation
+        showFruitAnimation(fruitInfo.emoji);
 
         // Add transaction
-        const activityName = rewardsData.activities[activity]?.name || 'Activity';
-        addTransaction(activityName, coins, 'positive');
+        addTransaction(fruitInfo.name, 1, 'positive', fruitInfo.emoji);
 
         // Update achievements
         updateAchievementProgress(activity);
 
         // Show toast notification
-        showToast(`🪙 Earned ${coins} EchoCoins for ${activityName}!`, 'success');
+        showToast(`${fruitInfo.emoji} Earned 1 ${fruitInfo.fruit} for ${fruitInfo.name}!`, 'success');
     }
 }
 

@@ -2,8 +2,13 @@
 // This file handles all database operations from the browser
 
 // Supabase client configuration
-const SUPABASE_URL = 'https://your-project.supabase.co'; // Replace with your URL
-const SUPABASE_ANON_KEY = 'your-anon-key'; // Replace with your anon key
+// Your actual Supabase credentials
+const SUPABASE_URL = 'https://qonntcyphcsqqbokykav.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFvbm50Y3lwaGNzcXFib2t5a2F2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA4MDUxOTEsImV4cCI6MjA3NjM4MTE5MX0.d2TQrgyP_x4kwhp-PP3EbMgn0Xt8XoJhR4uLFgYPCf0';
+
+// For development, you can also use environment variables:
+// const SUPABASE_URL = process.env.SUPABASE_URL || 'https://your-project.supabase.co';
+// const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY || 'your-anon-key';
 
 // Import Supabase (loaded from CDN in HTML)
 const { createClient } = supabase;
@@ -17,12 +22,39 @@ const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
   }
 });
 
+// Test connection on load
+console.log('🔗 Supabase client initialized');
+console.log('📍 URL:', SUPABASE_URL);
+console.log('🔑 Key:', SUPABASE_ANON_KEY.substring(0, 20) + '...');
+
+// Test database connection
+async function testSupabaseConnection() {
+  try {
+    const { data, error } = await supabaseClient
+      .from('users')
+      .select('count', { count: 'exact', head: true });
+    
+    if (error) {
+      console.error('❌ Supabase connection error:', error);
+    } else {
+      console.log('✅ Supabase connected successfully!');
+    }
+  } catch (err) {
+    console.error('❌ Supabase test failed:', err);
+  }
+}
+
+// Test connection when page loads
+setTimeout(testSupabaseConnection, 1000);
+
 // Database operations
 const SupabaseDB = {
   // Authentication
   auth: {
     async signUp(email, password, userData) {
       try {
+        console.log('🔄 Attempting signup for:', email);
+        
         const { data, error } = await supabaseClient.auth.signUp({
           email,
           password,
@@ -37,16 +69,22 @@ const SupabaseDB = {
           }
         });
         
-        if (error) throw error;
+        if (error) {
+          console.error('❌ Signup error:', error);
+          throw error;
+        }
+        
+        console.log('✅ Signup successful:', data);
         
         // Create user profile
         if (data.user) {
+          console.log('👤 Creating user profile...');
           await this.createUserProfile(data.user.id, userData);
         }
         
         return { data, error: null };
       } catch (error) {
-        console.error('Signup error:', error);
+        console.error('❌ Signup error:', error);
         return { data: null, error };
       }
     },
@@ -88,6 +126,9 @@ const SupabaseDB = {
     
     async createUserProfile(userId, userData) {
       try {
+        console.log('👤 Creating profile for user:', userId);
+        console.log('📝 User data:', userData);
+        
         const { data, error } = await supabaseClient
           .from('users')
           .insert([{
@@ -100,9 +141,15 @@ const SupabaseDB = {
             memo: userData.memo
           }]);
         
+        if (error) {
+          console.error('❌ Profile creation error:', error);
+        } else {
+          console.log('✅ Profile created successfully:', data);
+        }
+        
         return { data, error };
       } catch (error) {
-        console.error('Create profile error:', error);
+        console.error('❌ Create profile error:', error);
         return { data: null, error };
       }
     }
