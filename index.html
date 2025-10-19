@@ -34,6 +34,9 @@
 
     <link rel="stylesheet" href="styles.css">
 
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <!-- Supabase CDN -->
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 </head>
@@ -174,19 +177,19 @@
 
                 <div class="feature-highlights">
                     <div class="highlight-item">
-                        <span class="highlight-icon">🎤</span>
+                        <span class="highlight-icon"><i class="fas fa-microphone"></i></span>
                         <span>Speech-to-Text Notes</span>
                     </div>
                     <div class="highlight-item">
-                        <span class="highlight-icon">🔊</span>
+                        <span class="highlight-icon"><i class="fas fa-volume-up"></i></span>
                         <span>Text-to-Speech Reading</span>
                     </div>
                     <div class="highlight-item">
-                        <span class="highlight-icon">🤖</span>
+                        <span class="highlight-icon"><i class="fas fa-robot"></i></span>
                         <span>AI-Powered Flashcards</span>
                     </div>
                     <div class="highlight-item">
-                        <span class="highlight-icon">♿</span>
+                        <span class="highlight-icon"><i class="fas fa-universal-access"></i></span>
                         <span>Fully Accessible Design</span>
                     </div>
                 </div>
@@ -253,7 +256,7 @@
                 <div class="features-list">
                     <div class="feature-item" onclick="showSection('notes')" tabindex="0" role="button"
                         aria-label="Go to Smart Notes section">
-                        <div class="feature-icon">🎤</div>
+                        <div class="feature-icon"><i class="fas fa-microphone"></i></div>
                         <div class="feature-content">
                             <h4>Smart Notes with Voice</h4>
                             <p>Transform your thoughts into organized notes using advanced speech-to-text technology.
@@ -264,7 +267,7 @@
 
                     <div class="feature-item" onclick="showSection('notes')" tabindex="0" role="button"
                         aria-label="Go to PDF Reader section">
-                        <div class="feature-icon">🔊</div>
+                        <div class="feature-icon"><i class="fas fa-volume-up"></i></div>
                         <div class="feature-content">
                             <h4>PDF Text-to-Speech Reader</h4>
                             <p>Listen to your study materials with natural-sounding voices. Adjustable speed and pitch
@@ -286,7 +289,7 @@
 
                     <div class="feature-item" onclick="showSection('profile')" tabindex="0" role="button"
                         aria-label="Go to Profile section">
-                        <div class="feature-icon">⚙️</div>
+                        <div class="feature-icon"><i class="fas fa-cog"></i></div>
                         <div class="feature-content">
                             <h4>Personalized Experience</h4>
                             <p>Customize your learning environment with accessibility preferences that remember your
@@ -341,12 +344,12 @@
             <div class="notes-layout">
                 <!-- Left Side: PDF Text-to-Speech -->
                 <div class="pdf-speech-section">
-                    <h3>📄 PDF Text-to-Speech</h3>
+                    <h3><i class="fas fa-file-pdf"></i> PDF Text-to-Speech</h3>
 
                     <div class="pdf-upload-area">
                         <input type="file" id="notesPdfFile" accept=".pdf" aria-label="Upload PDF for text-to-speech">
                         <div class="upload-text">
-                            <p>📄 Upload PDF to read aloud</p>
+                            <p><i class="fas fa-file-pdf"></i> Upload PDF to read aloud</p>
                             <small>Drag & drop or click to browse</small>
                         </div>
                     </div>
@@ -359,16 +362,16 @@
 
                         <div class="speech-controls">
                             <button id="testSpeech" class="control-btn" aria-label="Test speech synthesis">
-                                🎵 Test Voice
+                                <i class="fas fa-music"></i> Test Voice
                             </button>
                             <button id="playPdfText" class="control-btn" aria-label="Read PDF aloud">
-                                🔊 Read PDF Aloud
+                                <i class="fas fa-volume-up"></i> Read PDF Aloud
                             </button>
                             <button id="pausePdfSpeech" class="control-btn" disabled aria-label="Pause PDF reading">
-                                ⏸️ Pause
+                                <i class="fas fa-pause"></i> Pause
                             </button>
                             <button id="stopPdfSpeech" class="control-btn" disabled aria-label="Stop PDF reading">
-                                ⏹️ Stop
+                                <i class="fas fa-stop"></i> Stop
                             </button>
                         </div>
 
@@ -409,30 +412,30 @@
 
                 <!-- Right Side: Notes -->
                 <div class="notes-section">
-                    <h3>📝 Your Notes</h3>
+                    <h3><i class="fas fa-sticky-note"></i> Your Notes</h3>
 
                     <div class="notes-controls">
                         <div class="speech-controls">
                             <button id="startRecording" class="control-btn" aria-label="Start voice recording">
-                                🎤 Start Recording
+                                <i class="fas fa-microphone"></i> Start Recording
                             </button>
                             <button id="stopRecording" class="control-btn" disabled aria-label="Stop voice recording">
-                                ⏹️ Stop Recording
+                                <i class="fas fa-stop"></i> Stop Recording
                             </button>
                             <button id="playNotes" class="control-btn" aria-label="Read notes aloud">
-                                🔊 Read Notes
+                                <i class="fas fa-volume-up"></i> Read Notes
                             </button>
                             <button id="pauseNotesSpeech" class="control-btn" disabled aria-label="Pause notes reading">
-                                ⏸️ Pause
+                                <i class="fas fa-pause"></i> Pause
                             </button>
                         </div>
 
                         <div class="notes-actions">
                             <button id="saveNotes" class="control-btn" aria-label="Save current notes">
-                                💾 Save Notes
+                                <i class="fas fa-save"></i> Save Notes
                             </button>
                             <button id="clearNotes" class="control-btn" aria-label="Clear all notes">
-                                🗑️ Clear
+                                <i class="fas fa-trash"></i> Clear
                             </button>
                         </div>
                     </div>
@@ -465,7 +468,7 @@
                 <div class="upload-area" id="uploadArea">
                     <input type="file" id="pdfFile" accept=".pdf" aria-label="Upload PDF file">
                     <div class="upload-text">
-                        <p>📄 Drop your PDF here or click to browse</p>
+                        <p><i class="fas fa-file-pdf"></i> Drop your PDF here or click to browse</p>
                         <small>Supported format: PDF files only</small>
                     </div>
                 </div>
@@ -545,7 +548,7 @@
                     <h3>💰 Earn EchoCoins</h3>
                     <div class="activities-grid">
                         <div class="activity-card" data-activity="note">
-                            <div class="activity-icon">📝</div>
+                            <div class="activity-icon"><i class="fas fa-sticky-note"></i></div>
                             <div class="activity-info">
                                 <h4>Take Notes</h4>
                                 <p>Earn 10 coins for every note saved</p>
@@ -563,7 +566,7 @@
                         </div>
 
                         <div class="activity-card" data-activity="study">
-                            <div class="activity-icon">📚</div>
+                            <div class="activity-icon"><i class="fas fa-book"></i></div>
                             <div class="activity-info">
                                 <h4>Study Session</h4>
                                 <p>Earn 15 coins for 10+ minutes of study</p>
@@ -572,7 +575,7 @@
                         </div>
 
                         <div class="activity-card" data-activity="speech">
-                            <div class="activity-icon">🎤</div>
+                            <div class="activity-icon"><i class="fas fa-microphone"></i></div>
                             <div class="activity-info">
                                 <h4>Voice Recording</h4>
                                 <p>Earn 5 coins for each voice note</p>
@@ -932,7 +935,7 @@
                 </form>
 
                 <div class="feedback-success" id="feedbackSuccess" style="display: none;">
-                    <div class="success-icon">✅</div>
+                    <div class="success-icon"><i class="fas fa-check-circle"></i></div>
                     <h3>Thank You for Your Feedback!</h3>
                     <p>Your feedback has been sent successfully. We appreciate your input in making EchoLearn more
                         accessible.</p>
