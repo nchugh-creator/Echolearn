@@ -809,6 +809,7 @@ body {
     text-align: center;
     border-bottom: 2px solid #071F35;
     padding-bottom: 0.5rem;
+    font-weight: bold;
 }
 
 /* PDF Upload Area */
@@ -956,6 +957,7 @@ body {
     line-height: 1.6;
     color: #333;
     font-size: 1rem;
+    font-weight: bold;
 }
 
 .pdf-text-content.reading {
@@ -1033,7 +1035,7 @@ body {
     border-radius: 8px;
     cursor: pointer;
     font-size: 0.9rem;
-    font-weight: 500;
+    font-weight: bold;
     transition: all 0.3s ease;
     min-height: 44px;
 }
@@ -1055,10 +1057,11 @@ body {
 }
 
 .notes-container {
-    margin-bottom: 2rem;
+    margin-bottom: 1rem;
     flex: 1;
     display: flex;
     flex-direction: column;
+    font-weight: bold;
 }
 
 #notesText {
@@ -1070,6 +1073,7 @@ body {
     line-height: 1.6;
     resize: vertical;
     min-height: 300px;
+    font-weight: bold;
 }
 
 #notesText:focus {
@@ -1082,11 +1086,15 @@ body {
     background: #f8f9fa;
     padding: 1.5rem;
     border-radius: 10px;
+    flex: 1;
+    min-height: 200px;
+    font-weight: bold;
 }
 
 .saved-notes h3 {
     margin-bottom: 1rem;
     color: #333;
+    font-weight: bold;
 }
 
 .note-item {
@@ -1107,6 +1115,7 @@ body {
 .note-item .note-content {
     color: #333;
     line-height: 1.5;
+    font-weight: bold;
 }
 
 .note-actions {
