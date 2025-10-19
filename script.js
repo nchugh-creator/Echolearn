@@ -1381,8 +1381,7 @@ function setupDragAndDrop(uploadArea, fileInputId, handleFunction) {
         }
     }
 }
-// ========
-============ REWARDS SYSTEM ====================
+// ==================== REWARDS SYSTEM ====================
 
 // Initialize rewards system
 function initializeRewards() {
