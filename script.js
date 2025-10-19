@@ -15,6 +15,26 @@ let speechPitch = 1;
 let selectedVoice = null;
 let availableVoices = [];
 
+// Rewards System Variables
+let userBalance = 0;
+let userAchievements = {};
+let rewardsData = {
+    activities: {
+        note: { coins: 10, name: 'Take Notes' },
+        flashcard: { coins: 25, name: 'Generate Flashcards' },
+        study: { coins: 15, name: 'Study Session' },
+        speech: { coins: 5, name: 'Voice Recording' },
+        daily: { coins: 20, name: 'Daily Login' },
+        feedback: { coins: 50, name: 'Share Feedback' }
+    },
+    achievements: {
+        'first-note': { target: 1, current: 0, coins: 100 },
+        'flashcard-master': { target: 10, current: 0, coins: 250 },
+        'daily-learner': { target: 7, current: 0, coins: 150 },
+        'voice-champion': { target: 50, current: 0, coins: 300 }
+    }
+};
+
 // Initialize the application
 document.addEventListener('DOMContentLoaded', function() {
     initializeApp();
@@ -1361,3 +1381,398 @@ function setupDragAndDrop(uploadArea, fileInputId, handleFunction) {
         }
     }
 }
+// ========
+============ REWARDS SYSTEM ====================
+
+// Initialize rewards system
+function initializeRewards() {
+    loadUserBalance();
+    loadUserAchievements();
+    updateBalanceDisplay();
+    updateAchievementsDisplay();
+    checkDailyLogin();
+}
+
+// Load user balance from localStorage
+function loadUserBalance() {
+    const savedBalance = localStorage.getItem('echolearn_balance');
+    userBalance = savedBalance ? parseInt(savedBalance) : 50; // Welcome bonus
+    
+    // Save welcome bonus if new user
+    if (!savedBalance) {
+        saveUserBalance();
+        addTransaction('Welcome bonus', 50, 'positive');
+    }
+}
+
+// Save user balance to localStorage
+function saveUserBalance() {
+    localStorage.setItem('echolearn_balance', userBalance.toString());
+}
+
+// Load user achievements from localStorage
+function loadUserAchievements() {
+    const savedAchievements = localStorage.getItem('echolearn_achievements');
+    if (savedAchievements) {
+        rewardsData.achievements = JSON.parse(savedAchievements);
+    }
+}
+
+// Save user achievements to localStorage
+function saveUserAchievements() {
+    localStorage.setItem('echolearn_achievements', JSON.stringify(rewardsData.achievements));
+}
+
+// Award coins for activity
+function awardCoins(activity, customAmount = null) {
+    const coins = customAmount || rewardsData.activities[activity]?.coins || 0;
+    if (coins > 0) {
+        userBalance += coins;
+        saveUserBalance();
+        updateBalanceDisplay();
+        
+        // Show coin animation
+        showCoinAnimation(coins);
+        
+        // Add transaction
+        const activityName = rewardsData.activities[activity]?.name || 'Activity';
+        addTransaction(activityName, coins, 'positive');
+        
+        // Update achievements
+        updateAchievementProgress(activity);
+        
+        // Show toast notification
+        showToast(`🪙 Earned ${coins} EchoCoins for ${activityName}!`, 'success');
+    }
+}
+
+// Update balance display
+function updateBalanceDisplay() {
+    const balanceElement = document.getElementById('currentBalance');
+    if (balanceElement) {
+        balanceElement.textContent = userBalance.toLocaleString();
+    }
+}
+
+// Show coin animation
+function showCoinAnimation(amount) {
+    const coin = document.createElement('div');
+    coin.className = 'coin-earned';
+    coin.textContent = `+${amount} 🪙`;
+    coin.style.left = '50%';
+    coin.style.top = '50%';
+    document.body.appendChild(coin);
+    
+    setTimeout(() => {
+        document.body.removeChild(coin);
+    }, 2000);
+}
+
+// Add transaction to history
+function addTransaction(description, amount, type) {
+    const transactions = getTransactions();
+    const transaction = {
+        id: Date.now(),
+        description,
+        amount,
+        type,
+        timestamp: new Date().toISOString()
+    };
+    
+    transactions.unshift(transaction);
+    
+    // Keep only last 10 transactions
+    if (transactions.length > 10) {
+        transactions.splice(10);
+    }
+    
+    localStorage.setItem('echolearn_transactions', JSON.stringify(transactions));
+    updateTransactionsDisplay();
+}
+
+// Get transactions from localStorage
+function getTransactions() {
+    const saved = localStorage.getItem('echolearn_transactions');
+    return saved ? JSON.parse(saved) : [];
+}
+
+// Update transactions display
+function updateTransactionsDisplay() {
+    const transactionsList = document.getElementById('transactionsList');
+    if (!transactionsList) return;
+    
+    const transactions = getTransactions();
+    
+    if (transactions.length === 0) {
+        transactionsList.innerHTML = '<p style="text-align: center; color: #666;">No recent activity</p>';
+        return;
+    }
+    
+    transactionsList.innerHTML = transactions.map(transaction => {
+        const timeAgo = getTimeAgo(new Date(transaction.timestamp));
+        const sign = transaction.type === 'positive' ? '+' : '-';
+        
+        return `
+            <div class="transaction-item">
+                <div class="transaction-icon">${transaction.type === 'positive' ? '🎉' : '💸'}</div>
+                <div class="transaction-info">
+                    <span class="transaction-desc">${transaction.description}</span>
+                    <span class="transaction-time">${timeAgo}</span>
+                </div>
+                <div class="transaction-amount ${transaction.type}">${sign}${transaction.amount} 🪙</div>
+            </div>
+        `;
+    }).join('');
+}
+
+// Get time ago string
+function getTimeAgo(date) {
+    const now = new Date();
+    const diffMs = now - date;
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+    const diffDays = Math.floor(diffMs / 86400000);
+    
+    if (diffMins < 1) return 'Just now';
+    if (diffMins < 60) return `${diffMins}m ago`;
+    if (diffHours < 24) return `${diffHours}h ago`;
+    return `${diffDays}d ago`;
+}
+
+// Update achievement progress
+function updateAchievementProgress(activity) {
+    let updated = false;
+    
+    // Map activities to achievements
+    const activityMap = {
+        'note': 'first-note',
+        'flashcard': 'flashcard-master',
+        'speech': 'voice-champion'
+    };
+    
+    const achievementKey = activityMap[activity];
+    if (achievementKey && rewardsData.achievements[achievementKey]) {
+        rewardsData.achievements[achievementKey].current++;
+        
+        // Check if achievement is completed
+        const achievement = rewardsData.achievements[achievementKey];
+        if (achievement.current >= achievement.target && !achievement.completed) {
+            achievement.completed = true;
+            awardCoins(null, achievement.coins);
+            showToast(`🏅 Achievement Unlocked! Earned ${achievement.coins} bonus coins!`, 'success');
+            updated = true;
+        }
+    }
+    
+    // Check daily login achievement
+    checkDailyLoginAchievement();
+    
+    if (updated) {
+        saveUserAchievements();
+        updateAchievementsDisplay();
+    }
+}
+
+// Check daily login
+function checkDailyLogin() {
+    const lastLogin = localStorage.getItem('echolearn_last_login');
+    const today = new Date().toDateString();
+    
+    if (lastLogin !== today) {
+        localStorage.setItem('echolearn_last_login', today);
+        
+        // Award daily login bonus
+        setTimeout(() => {
+            awardCoins('daily');
+        }, 1000);
+        
+        // Update daily login streak
+        updateDailyLoginStreak();
+    }
+}
+
+// Update daily login streak
+function updateDailyLoginStreak() {
+    const streakData = JSON.parse(localStorage.getItem('echolearn_login_streak') || '{"count": 0, "lastDate": null}');
+    const today = new Date().toDateString();
+    const yesterday = new Date(Date.now() - 86400000).toDateString();
+    
+    if (streakData.lastDate === yesterday) {
+        streakData.count++;
+    } else if (streakData.lastDate !== today) {
+        streakData.count = 1;
+    }
+    
+    streakData.lastDate = today;
+    localStorage.setItem('echolearn_login_streak', JSON.stringify(streakData));
+    
+    // Update daily learner achievement
+    rewardsData.achievements['daily-learner'].current = streakData.count;
+    saveUserAchievements();
+}
+
+// Check daily login achievement
+function checkDailyLoginAchievement() {
+    const streakData = JSON.parse(localStorage.getItem('echolearn_login_streak') || '{"count": 0}');
+    const achievement = rewardsData.achievements['daily-learner'];
+    
+    if (streakData.count >= achievement.target && !achievement.completed) {
+        achievement.completed = true;
+        awardCoins(null, achievement.coins);
+        showToast(`🏅 Daily Learner Achievement Unlocked! Earned ${achievement.coins} bonus coins!`, 'success');
+        saveUserAchievements();
+        updateAchievementsDisplay();
+    }
+}
+
+// Update achievements display
+function updateAchievementsDisplay() {
+    const achievementsList = document.getElementById('achievementsList');
+    if (!achievementsList) return;
+    
+    const achievementElements = achievementsList.querySelectorAll('.achievement-item');
+    
+    achievementElements.forEach(element => {
+        const achievementKey = element.dataset.achievement;
+        const achievement = rewardsData.achievements[achievementKey];
+        
+        if (achievement) {
+            const progressElement = element.querySelector('.achievement-progress');
+            if (progressElement) {
+                progressElement.textContent = `${Math.min(achievement.current, achievement.target)}/${achievement.target}`;
+            }
+            
+            if (achievement.completed) {
+                element.classList.remove('locked');
+                element.classList.add('unlocked');
+            }
+        }
+    });
+}
+
+// Redeem reward
+function redeemReward(rewardType, cost) {
+    if (userBalance >= cost) {
+        userBalance -= cost;
+        saveUserBalance();
+        updateBalanceDisplay();
+        
+        // Add transaction
+        addTransaction(`Redeemed ${rewardType}`, cost, 'negative');
+        
+        // Show success message
+        showToast(`🎉 Successfully redeemed ${rewardType}! Check your profile for updates.`, 'success');
+        
+        // Apply reward (this would integrate with actual features)
+        applyReward(rewardType);
+    } else {
+        showToast(`❌ Insufficient EchoCoins. You need ${cost - userBalance} more coins.`, 'error');
+    }
+}
+
+// Apply reward (placeholder for actual implementation)
+function applyReward(rewardType) {
+    switch (rewardType) {
+        case 'theme':
+            // Unlock custom themes
+            localStorage.setItem('echolearn_custom_theme', 'true');
+            break;
+        case 'voices':
+            // Unlock premium voices
+            localStorage.setItem('echolearn_premium_voices', 'true');
+            break;
+        case 'speed':
+            // Unlock speed boost
+            localStorage.setItem('echolearn_speed_boost', 'true');
+            break;
+        case 'badge':
+            // Add achievement badge
+            localStorage.setItem('echolearn_achievement_badge', 'true');
+            break;
+        case 'mobile':
+            // Grant mobile app access
+            localStorage.setItem('echolearn_mobile_access', 'true');
+            break;
+        case 'gift':
+            // Award surprise gift (random bonus coins)
+            const bonusCoins = Math.floor(Math.random() * 500) + 100;
+            awardCoins(null, bonusCoins);
+            showToast(`🎁 Surprise! You received ${bonusCoins} bonus EchoCoins!`, 'success');
+            break;
+    }
+}
+
+// Enhanced existing functions to award coins
+
+// Override saveNotes function to award coins
+const originalSaveNotes = window.saveNotes;
+window.saveNotes = function() {
+    if (originalSaveNotes) {
+        originalSaveNotes();
+    } else {
+        // Original saveNotes functionality
+        const notesText = document.getElementById('notesText').value.trim();
+        if (notesText) {
+            const notes = getSavedNotes();
+            const newNote = {
+                id: Date.now(),
+                content: notesText,
+                timestamp: new Date().toISOString()
+            };
+            notes.unshift(newNote);
+            localStorage.setItem('echolearn_notes', JSON.stringify(notes));
+            loadSavedNotes();
+            document.getElementById('notesText').value = '';
+            showToast('Notes saved successfully!', 'success');
+        }
+    }
+    
+    // Award coins for saving notes
+    awardCoins('note');
+};
+
+// Override generateFlashcards to award coins
+const originalGenerateFlashcards = window.uploadPDF;
+window.uploadPDF = function() {
+    if (originalGenerateFlashcards) {
+        originalGenerateFlashcards();
+    }
+    
+    // Award coins for generating flashcards
+    setTimeout(() => {
+        if (flashcards && flashcards.length > 0) {
+            awardCoins('flashcard');
+        }
+    }, 2000);
+};
+
+// Override speech recording to award coins
+const originalStopRecording = window.stopRecording;
+window.stopRecording = function() {
+    if (originalStopRecording) {
+        originalStopRecording();
+    }
+    
+    // Award coins for voice recording
+    awardCoins('speech');
+};
+
+// Override feedback submission to award coins
+const originalSubmitFeedback = document.getElementById('feedbackForm')?.onsubmit;
+if (document.getElementById('feedbackForm')) {
+    document.getElementById('feedbackForm').addEventListener('submit', function(e) {
+        if (originalSubmitFeedback) {
+            originalSubmitFeedback(e);
+        }
+        
+        // Award coins for feedback
+        setTimeout(() => {
+            awardCoins('feedback');
+        }, 1000);
+    });
+}
+
+// Initialize rewards when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(initializeRewards, 500);
+});

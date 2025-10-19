@@ -1906,6 +1906,272 @@ input[type="radio"]:hover {
     }
 }
 
+/* Rewards System Styles */
+.rewards-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.balance-card {
+    background: linear-gradient(135deg, #071F35 0%, #0A2A47 100%);
+    color: white;
+    border-radius: 20px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 10px 30px rgba(7, 31, 53, 0.3);
+}
+
+.balance-header {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.coin-icon {
+    font-size: 4rem;
+    animation: coinSpin 3s ease-in-out infinite;
+}
+
+@keyframes coinSpin {
+    0%, 100% { transform: rotateY(0deg); }
+    50% { transform: rotateY(180deg); }
+}
+
+.balance-info h3 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.balance-amount {
+    font-size: 3rem;
+    font-weight: bold;
+    margin: 0.5rem 0;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+.balance-subtitle {
+    margin: 0;
+    opacity: 0.9;
+    font-size: 1.1rem;
+}
+
+.earning-section, .store-section, .transactions-section, .achievements-section {
+    margin-bottom: 3rem;
+}
+
+.earning-section h3, .store-section h3, .transactions-section h3, .achievements-section h3 {
+    color: #071F35;
+    font-size: 1.8rem;
+    margin-bottom: 1.5rem;
+    font-weight: bold;
+    text-align: center;
+}
+
+.activities-grid, .rewards-grid, .achievements-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.activity-card, .reward-item, .achievement-item {
+    background: white;
+    border-radius: 15px;
+    padding: 1.5rem;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    border: 2px solid #f0f0f0;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.activity-card:hover, .reward-item:hover, .achievement-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(7, 31, 53, 0.2);
+    border-color: #071F35;
+}
+
+.activity-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.activity-icon, .reward-icon, .achievement-icon {
+    font-size: 2.5rem;
+    flex-shrink: 0;
+}
+
+.activity-info, .reward-info, .achievement-info {
+    flex: 1;
+}
+
+.activity-info h4, .reward-info h4, .achievement-info h4 {
+    margin: 0 0 0.5rem 0;
+    color: #071F35;
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+.activity-info p, .reward-info p, .achievement-info p {
+    margin: 0 0 0.5rem 0;
+    color: #666;
+    line-height: 1.4;
+}
+
+.reward-amount, .reward-cost {
+    font-weight: bold;
+    color: #071F35;
+    font-size: 1.1rem;
+}
+
+.reward-item {
+    text-align: center;
+}
+
+.redeem-btn {
+    background: #071F35;
+    color: white;
+    border: none;
+    border-radius: 25px;
+    padding: 0.75rem 1.5rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 1rem;
+    width: 100%;
+}
+
+.redeem-btn:hover {
+    background: #0A2A47;
+    transform: translateY(-2px);
+}
+
+.redeem-btn:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.transactions-list {
+    background: white;
+    border-radius: 15px;
+    padding: 1.5rem;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.transaction-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.transaction-item:last-child {
+    border-bottom: none;
+}
+
+.transaction-icon {
+    font-size: 1.5rem;
+}
+
+.transaction-info {
+    flex: 1;
+}
+
+.transaction-desc {
+    display: block;
+    font-weight: bold;
+    color: #333;
+}
+
+.transaction-time {
+    display: block;
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.transaction-amount {
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+.transaction-amount.positive {
+    color: #28a745;
+}
+
+.transaction-amount.negative {
+    color: #dc3545;
+}
+
+.achievement-item.locked {
+    opacity: 0.6;
+    background: #f8f9fa;
+}
+
+.achievement-item.unlocked {
+    background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+    border-color: #28a745;
+}
+
+.achievement-progress {
+    font-size: 0.9rem;
+    color: #666;
+    font-weight: bold;
+}
+
+.achievement-item.unlocked .achievement-progress {
+    color: #155724;
+}
+
+/* Coin Animation for Rewards */
+.coin-earned {
+    position: fixed;
+    font-size: 2rem;
+    z-index: 9999;
+    pointer-events: none;
+    animation: coinFloat 2s ease-out forwards;
+}
+
+@keyframes coinFloat {
+    0% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-100px) scale(1.5);
+    }
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .balance-header {
+        flex-direction: column;
+        text-align: center;
+        gap: 1rem;
+    }
+    
+    .activities-grid, .rewards-grid, .achievements-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .activity-card {
+        flex-direction: column;
+        text-align: center;
+        gap: 1rem;
+    }
+    
+    .balance-amount {
+        font-size: 2.5rem;
+    }
+    
+    .coin-icon {
+        font-size: 3rem;
+    }
+}
+
 /* Print Styles */
 @media print {
     .navbar,

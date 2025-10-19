@@ -193,6 +193,123 @@ CREATE POLICY "Users can view own PDFs" ON storage.objects
 CREATE POLICY "Users can delete own PDFs" ON storage.objects
   FOR DELETE USING (bucket_id = 'pdfs' AND auth.uid()::text = (storage.foldername(name))[1]);
 
+-- Rewards and Achievements Tables
+CREATE TABLE public.user_rewards (
+    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+    user_id UUID REFERENCES public.users(id) ON DELETE CASCADE NOT NULL,
+    balance INTEGER DEFAULT 0,
+    total_earned INTEGER DEFAULT 0,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE TABLE public.reward_transactions (
+    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+    user_id UUID REFERENCES public.users(id) ON DELETE CASCADE NOT NULL,
+    activity_type VARCHAR(50) NOT NULL,
+    coins_earned INTEGER NOT NULL,
+    description TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE TABLE public.user_achievements (
+    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+    user_id UUID REFERENCES public.users(id) ON DELETE CASCADE NOT NULL,
+    achievement_key VARCHAR(100) NOT NULL,
+    progress INTEGER DEFAULT 0,
+    target INTEGER NOT NULL,
+    completed BOOLEAN DEFAULT FALSE,
+    completed_at TIMESTAMP WITH TIME ZONE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    UNIQUE(user_id, achievement_key)
+);
+
+CREATE TABLE public.reward_redemptions (
+    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+    user_id UUID REFERENCES public.users(id) ON DELETE CASCADE NOT NULL,
+    reward_type VARCHAR(100) NOT NULL,
+    coins_spent INTEGER NOT NULL,
+    redeemed_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Indexes for rewards system
+CREATE INDEX idx_user_rewards_user_id ON public.user_rewards(user_id);
+CREATE INDEX idx_reward_transactions_user_id ON public.reward_transactions(user_id);
+CREATE INDEX idx_user_achievements_user_id ON public.user_achievements(user_id);
+CREATE INDEX idx_reward_redemptions_user_id ON public.reward_redemptions(user_id);
+
+-- RLS Policies for rewards system
+ALTER TABLE public.user_rewards ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.reward_transactions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.user_achievements ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.reward_redemptions ENABLE ROW LEVEL SECURITY;
+
+-- User rewards policies
+CREATE POLICY "Users can view own rewards" ON public.user_rewards
+  FOR SELECT USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can update own rewards" ON public.user_rewards
+  FOR UPDATE USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can insert own rewards" ON public.user_rewards
+  FOR INSERT WITH CHECK (auth.uid() = user_id);
+
+-- Reward transactions policies
+CREATE POLICY "Users can view own transactions" ON public.reward_transactions
+  FOR SELECT USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can insert own transactions" ON public.reward_transactions
+  FOR INSERT WITH CHECK (auth.uid() = user_id);
+
+-- User achievements policies
+CREATE POLICY "Users can view own achievements" ON public.user_achievements
+  FOR SELECT USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can update own achievements" ON public.user_achievements
+  FOR UPDATE USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can insert own achievements" ON public.user_achievements
+  FOR INSERT WITH CHECK (auth.uid() = user_id);
+
+-- Reward redemptions policies
+CREATE POLICY "Users can view own redemptions" ON public.reward_redemptions
+  FOR SELECT USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can insert own redemptions" ON public.reward_redemptions
+  FOR INSERT WITH CHECK (auth.uid() = user_id);
+
+-- Triggers for rewards system
+CREATE TRIGGER update_user_rewards_updated_at BEFORE UPDATE ON public.user_rewards
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+-- Function to initialize user rewards on signup
+CREATE OR REPLACE FUNCTION public.initialize_user_rewards()
+RETURNS TRIGGER AS $
+BEGIN
+  -- Create rewards record with welcome bonus
+  INSERT INTO public.user_rewards (user_id, balance, total_earned)
+  VALUES (NEW.id, 50, 50);
+  
+  -- Create initial achievements
+  INSERT INTO public.user_achievements (user_id, achievement_key, progress, target) VALUES
+    (NEW.id, 'first-note', 0, 1),
+    (NEW.id, 'flashcard-master', 0, 10),
+    (NEW.id, 'daily-learner', 0, 7),
+    (NEW.id, 'voice-champion', 0, 50);
+  
+  -- Add welcome bonus transaction
+  INSERT INTO public.reward_transactions (user_id, activity_type, coins_earned, description)
+  VALUES (NEW.id, 'welcome', 50, 'Welcome bonus');
+  
+  RETURN NEW;
+END;
+$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Trigger to initialize rewards for new users
+CREATE TRIGGER on_user_rewards_created
+  AFTER INSERT ON public.users
+  FOR EACH ROW EXECUTE FUNCTION public.initialize_user_rewards();
+
 -- Sample data (optional - remove in production)
 -- INSERT INTO public.feedback (name, email, type, subject, message, rating)
 -- VALUES ('Test User', 'test@example.com', 'general', 'Great platform!', 'EchoLearn is amazing for accessibility.', 5);

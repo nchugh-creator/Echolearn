@@ -66,6 +66,8 @@
                     style="display: none;">Profile</button>
                 <button class="nav-btn" onclick="showSection('feedback')" aria-label="Go to feedback page"
                     style="display: none;">Feedback</button>
+                <button class="nav-btn" onclick="showSection('rewards')" aria-label="Go to rewards page"
+                    style="display: none;">EchoCoins</button>
                 <button class="nav-btn" id="authBtn" onclick="showAuth()" aria-label="Login or signup">Login</button>
             </div>
         </div>
@@ -486,6 +488,208 @@
                     <div class="profile-actions">
                         <button id="editProfile" class="profile-btn" onclick="editProfile()">Edit Profile</button>
                         <button id="logoutBtn" class="profile-btn logout" onclick="logout()">Logout</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Rewards Section -->
+        <section id="rewardsSection" class="content-section">
+            <h2>🪙 EchoCoins Rewards</h2>
+
+            <div class="rewards-container">
+                <!-- Current Balance -->
+                <div class="balance-card">
+                    <div class="balance-header">
+                        <div class="coin-icon">🪙</div>
+                        <div class="balance-info">
+                            <h3>Your EchoCoins</h3>
+                            <div class="balance-amount" id="currentBalance">0</div>
+                            <p class="balance-subtitle">Keep learning to earn more!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Earning Activities -->
+                <div class="earning-section">
+                    <h3>💰 Earn EchoCoins</h3>
+                    <div class="activities-grid">
+                        <div class="activity-card" data-activity="note">
+                            <div class="activity-icon">📝</div>
+                            <div class="activity-info">
+                                <h4>Take Notes</h4>
+                                <p>Earn 10 coins for every note saved</p>
+                                <div class="reward-amount">+10 🪙</div>
+                            </div>
+                        </div>
+
+                        <div class="activity-card" data-activity="flashcard">
+                            <div class="activity-icon">🤖</div>
+                            <div class="activity-info">
+                                <h4>Generate Flashcards</h4>
+                                <p>Earn 25 coins for creating AI flashcards</p>
+                                <div class="reward-amount">+25 🪙</div>
+                            </div>
+                        </div>
+
+                        <div class="activity-card" data-activity="study">
+                            <div class="activity-icon">📚</div>
+                            <div class="activity-info">
+                                <h4>Study Session</h4>
+                                <p>Earn 15 coins for 10+ minutes of study</p>
+                                <div class="reward-amount">+15 🪙</div>
+                            </div>
+                        </div>
+
+                        <div class="activity-card" data-activity="speech">
+                            <div class="activity-icon">🎤</div>
+                            <div class="activity-info">
+                                <h4>Voice Recording</h4>
+                                <p>Earn 5 coins for each voice note</p>
+                                <div class="reward-amount">+5 🪙</div>
+                            </div>
+                        </div>
+
+                        <div class="activity-card" data-activity="daily">
+                            <div class="activity-icon">🌟</div>
+                            <div class="activity-info">
+                                <h4>Daily Login</h4>
+                                <p>Earn 20 coins for daily platform use</p>
+                                <div class="reward-amount">+20 🪙</div>
+                            </div>
+                        </div>
+
+                        <div class="activity-card" data-activity="feedback">
+                            <div class="activity-icon">💬</div>
+                            <div class="activity-info">
+                                <h4>Share Feedback</h4>
+                                <p>Earn 50 coins for platform feedback</p>
+                                <div class="reward-amount">+50 🪙</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Rewards Store -->
+                <div class="store-section">
+                    <h3>🛍️ Rewards Store</h3>
+                    <div class="rewards-grid">
+                        <div class="reward-item" data-cost="100">
+                            <div class="reward-icon">🎨</div>
+                            <div class="reward-info">
+                                <h4>Custom Theme</h4>
+                                <p>Unlock personalized color themes</p>
+                                <div class="reward-cost">100 🪙</div>
+                                <button class="redeem-btn" onclick="redeemReward('theme', 100)">Redeem</button>
+                            </div>
+                        </div>
+
+                        <div class="reward-item" data-cost="200">
+                            <div class="reward-icon">🔊</div>
+                            <div class="reward-info">
+                                <h4>Premium Voices</h4>
+                                <p>Access to premium text-to-speech voices</p>
+                                <div class="reward-cost">200 🪙</div>
+                                <button class="redeem-btn" onclick="redeemReward('voices', 200)">Redeem</button>
+                            </div>
+                        </div>
+
+                        <div class="reward-item" data-cost="150">
+                            <div class="reward-icon">⚡</div>
+                            <div class="reward-info">
+                                <h4>Speed Boost</h4>
+                                <p>Faster AI flashcard generation</p>
+                                <div class="reward-cost">150 🪙</div>
+                                <button class="redeem-btn" onclick="redeemReward('speed', 150)">Redeem</button>
+                            </div>
+                        </div>
+
+                        <div class="reward-item" data-cost="300">
+                            <div class="reward-icon">🏆</div>
+                            <div class="reward-info">
+                                <h4>Achievement Badge</h4>
+                                <p>Special recognition on your profile</p>
+                                <div class="reward-cost">300 🪙</div>
+                                <button class="redeem-btn" onclick="redeemReward('badge', 300)">Redeem</button>
+                            </div>
+                        </div>
+
+                        <div class="reward-item" data-cost="500">
+                            <div class="reward-icon">📱</div>
+                            <div class="reward-info">
+                                <h4>Mobile App Access</h4>
+                                <p>Early access to EchoLearn mobile app</p>
+                                <div class="reward-cost">500 🪙</div>
+                                <button class="redeem-btn" onclick="redeemReward('mobile', 500)">Redeem</button>
+                            </div>
+                        </div>
+
+                        <div class="reward-item" data-cost="1000">
+                            <div class="reward-icon">🎁</div>
+                            <div class="reward-info">
+                                <h4>Surprise Gift</h4>
+                                <p>Mystery reward package</p>
+                                <div class="reward-cost">1000 🪙</div>
+                                <button class="redeem-btn" onclick="redeemReward('gift', 1000)">Redeem</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Transactions -->
+                <div class="transactions-section">
+                    <h3>📊 Recent Activity</h3>
+                    <div class="transactions-list" id="transactionsList">
+                        <div class="transaction-item">
+                            <div class="transaction-icon">🎉</div>
+                            <div class="transaction-info">
+                                <span class="transaction-desc">Welcome bonus</span>
+                                <span class="transaction-time">Just now</span>
+                            </div>
+                            <div class="transaction-amount positive">+50 🪙</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Achievements -->
+                <div class="achievements-section">
+                    <h3>🏅 Achievements</h3>
+                    <div class="achievements-grid" id="achievementsList">
+                        <div class="achievement-item locked" data-achievement="first-note">
+                            <div class="achievement-icon">📝</div>
+                            <div class="achievement-info">
+                                <h4>First Steps</h4>
+                                <p>Save your first note</p>
+                                <div class="achievement-progress">0/1</div>
+                            </div>
+                        </div>
+
+                        <div class="achievement-item locked" data-achievement="flashcard-master">
+                            <div class="achievement-icon">🤖</div>
+                            <div class="achievement-info">
+                                <h4>AI Master</h4>
+                                <p>Generate 10 flashcard sets</p>
+                                <div class="achievement-progress">0/10</div>
+                            </div>
+                        </div>
+
+                        <div class="achievement-item locked" data-achievement="daily-learner">
+                            <div class="achievement-icon">🌟</div>
+                            <div class="achievement-info">
+                                <h4>Daily Learner</h4>
+                                <p>Login for 7 consecutive days</p>
+                                <div class="achievement-progress">0/7</div>
+                            </div>
+                        </div>
+
+                        <div class="achievement-item locked" data-achievement="voice-champion">
+                            <div class="achievement-icon">🎤</div>
+                            <div class="achievement-info">
+                                <h4>Voice Champion</h4>
+                                <p>Record 50 voice notes</p>
+                                <div class="achievement-progress">0/50</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
