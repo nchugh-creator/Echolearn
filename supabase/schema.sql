@@ -336,7 +336,7 @@ CREATE TRIGGER update_user_rewards_updated_at BEFORE UPDATE ON public.user_rewar
 
 -- Function to initialize user rewards on signup
 CREATE OR REPLACE FUNCTION public.initialize_user_rewards()
-RETURNS TRIGGER AS $
+RETURNS TRIGGER AS $$
 BEGIN
   -- Create rewards record with welcome bonus
   INSERT INTO public.user_rewards (user_id, balance, total_earned)
@@ -355,7 +355,7 @@ BEGIN
   
   RETURN NEW;
 END;
-$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
 
 -- Trigger to initialize rewards for new users
 CREATE TRIGGER on_user_rewards_created
