@@ -1533,13 +1533,13 @@ function saveUserBalance() {
 function loadUserAchievements() {
     const savedAchievements = localStorage.getItem('echolearn_achievements');
     if (savedAchievements) {
-        rewardsData.achievements = JSON.parse(savedAchievements);
+        fruitData.achievements = JSON.parse(savedAchievements);
     }
 }
 
 // Save user achievements to localStorage
 function saveUserAchievements() {
-    localStorage.setItem('echolearn_achievements', JSON.stringify(rewardsData.achievements));
+    localStorage.setItem('echolearn_achievements', JSON.stringify(fruitData.achievements));
 }
 
 // Award coins for activity
@@ -1672,11 +1672,11 @@ function updateAchievementProgress(activity) {
     };
 
     const achievementKey = activityMap[activity];
-    if (achievementKey && rewardsData.achievements[achievementKey]) {
-        rewardsData.achievements[achievementKey].current++;
+    if (achievementKey && fruitData.achievements[achievementKey]) {
+        fruitData.achievements[achievementKey].current++;
 
         // Check if achievement is completed
-        const achievement = rewardsData.achievements[achievementKey];
+        const achievement = fruitData.achievements[achievementKey];
         if (achievement.current >= achievement.target && !achievement.completed) {
             achievement.completed = true;
             awardCoins(null, achievement.coins);
@@ -1728,14 +1728,14 @@ function updateDailyLoginStreak() {
     localStorage.setItem('echolearn_login_streak', JSON.stringify(streakData));
 
     // Update daily learner achievement
-    rewardsData.achievements['daily-learner'].current = streakData.count;
+    fruitData.achievements['daily-learner'].current = streakData.count;
     saveUserAchievements();
 }
 
 // Check daily login achievement
 function checkDailyLoginAchievement() {
     const streakData = JSON.parse(localStorage.getItem('echolearn_login_streak') || '{"count": 0}');
-    const achievement = rewardsData.achievements['daily-learner'];
+    const achievement = fruitData.achievements['daily-learner'];
 
     if (streakData.count >= achievement.target && !achievement.completed) {
         achievement.completed = true;
@@ -1755,7 +1755,7 @@ function updateAchievementsDisplay() {
 
     achievementElements.forEach(element => {
         const achievementKey = element.dataset.achievement;
-        const achievement = rewardsData.achievements[achievementKey];
+        const achievement = fruitData.achievements[achievementKey];
 
         if (achievement) {
             const progressElement = element.querySelector('.achievement-progress');
@@ -2079,24 +2079,85 @@ function formatCardNumber(number) {
 // Update VISA-related achievements
 function updateVisaAchievements(dollarAmount) {
     // Add new achievement for first VISA redemption
-    if (!rewardsData.achievements['visa-redeemer']) {
-        rewardsData.achievements['visa-redeemer'] = {
+    if (!fruitData.achievements['visa-redeemer']) {
+        fruitData.achievements['visa-redeemer'] = {
             target: 1,
             current: 0,
-            coins: 200,
+            reward: { kiwi: 4 },
             completed: false
         };
     }
 
-    rewardsData.achievements['visa-redeemer'].current++;
+    fruitData.achievements['visa-redeemer'].current++;
 
-    if (rewardsData.achievements['visa-redeemer'].current >= rewardsData.achievements['visa-redeemer'].target && !rewardsData.achievements['visa-redeemer'].completed) {
-        rewardsData.achievements['visa-redeemer'].completed = true;
-        awardCoins(null, rewardsData.achievements['visa-redeemer'].coins);
-        showToast(`🏅 VISA Redeemer Achievement Unlocked! Earned ${rewardsData.achievements['visa-redeemer'].coins} bonus coins!`, 'success');
+    if (fruitData.achievements['visa-redeemer'].current >= fruitData.achievements['visa-redeemer'].target && !fruitData.achievements['visa-redeemer'].completed) {
+        fruitData.achievements['visa-redeemer'].completed = true;
+        // Award 4 kiwis (200 points worth)
+        userFruits.kiwi += 4;
+        calculateTotalBalance();
+        saveUserBalance();
+        showToast(`🏅 VISA Redeemer Achievement Unlocked! Earned 4 kiwis! 🥝`, 'success');
     }
 
     saveUserAchievements();
+}
+
+// Update fruit display
+function updateFruitDisplay() {
+    // Update individual fruit counters
+    const fruitCounters = {
+        strawberry: document.getElementById('strawberryCount'),
+        apple: document.getElementById('appleCount'),
+        orange: document.getElementById('orangeCount'),
+        banana: document.getElementById('bananaCount'),
+        grape: document.getElementById('grapeCount'),
+        kiwi: document.getElementById('kiwiCount')
+    };
+    
+    Object.keys(fruitCounters).forEach(fruit => {
+        if (fruitCounters[fruit]) {
+            fruitCounters[fruit].textContent = userFruits[fruit] || 0;
+        }
+    });
+}
+
+// Show fruit animation
+function showFruitAnimation(emoji) {
+    const fruit = document.createElement('div');
+    fruit.className = 'fruit-earned';
+    fruit.textContent = `+1 ${emoji}`;
+    fruit.style.left = '50%';
+    fruit.style.top = '50%';
+    document.body.appendChild(fruit);
+    
+    setTimeout(() => {
+        if (document.body.contains(fruit)) {
+            document.body.removeChild(fruit);
+        }
+    }, 2000);
+}
+
+// Enhanced transaction function for fruits
+function addTransaction(description, amount, type, emoji = '🪙') {
+    const transactions = getTransactions();
+    const transaction = {
+        id: Date.now(),
+        description,
+        amount,
+        type,
+        emoji,
+        timestamp: new Date().toISOString()
+    };
+    
+    transactions.unshift(transaction);
+    
+    // Keep only last 10 transactions
+    if (transactions.length > 10) {
+        transactions.splice(10);
+    }
+    
+    localStorage.setItem('echolearn_transactions', JSON.stringify(transactions));
+    updateTransactionsDisplay();
 }
 
 // Update balance display to show VISA eligibility
