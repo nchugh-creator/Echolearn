@@ -254,7 +254,7 @@
     width: 8px;
     height: 8px;
     border-radius: 50%;
-    background: #A5BFCC;
+    background: #071F35;
     animation: typingDot 1.4s infinite ease-in-out;
 }
 
@@ -294,9 +294,9 @@
 }
 
 .quick-action-btn:hover, .quick-action-btn:focus {
-    background: #A5BFCC;
+    background: #071F35;
     color: white;
-    border-color: #A5BFCC;
+    border-color: #071F35;
     outline: none;
 }
 
@@ -328,8 +328,8 @@
 
 .chatbot-input:focus {
     outline: none;
-    border-color: #A5BFCC;
-    box-shadow: 0 0 0 3px rgba(165, 191, 204, 0.1);
+    border-color: #071F35;
+    box-shadow: 0 0 0 3px rgba(7, 31, 53, 0.1);
 }
 
 .chatbot-input-actions {
@@ -343,7 +343,7 @@
     height: 40px;
     border: none;
     border-radius: 50%;
-    background: #A5BFCC;
+    background: #071F35;
     color: white;
     cursor: pointer;
     display: flex;
@@ -354,13 +354,13 @@
 }
 
 .chatbot-action-btn:hover, .chatbot-action-btn:focus {
-    background: #8FA9B8;
+    background: #0A2A47;
     transform: scale(1.05);
     outline: none;
 }
 
 .chatbot-action-btn:focus {
-    box-shadow: 0 0 0 3px rgba(165, 191, 204, 0.3);
+    box-shadow: 0 0 0 3px rgba(7, 31, 53, 0.3);
 }
 
 /* Status Bar */
@@ -449,7 +449,7 @@
 .quick-action-btn:focus,
 .message-action-btn:focus,
 .chatbot-action-btn:focus {
-    outline: 3px solid #A5BFCC;
+    outline: 3px solid #071F35;
     outline-offset: 2px;
 }
 
