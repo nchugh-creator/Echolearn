@@ -1167,17 +1167,17 @@ async function checkBedrockStatus() {
         
         if (data.status === 'connected') {
             statusElement.className = 'ai-status connected';
-            iconElement.textContent = '🤖✅';
+            iconElement.textContent = '';
             textElement.textContent = `AI Connected: ${data.model.split('.')[1]} (${data.region})`;
         } else {
             statusElement.className = 'ai-status fallback';
-            iconElement.textContent = '🤖⚠️';
+            iconElement.textContent = '';
             textElement.textContent = 'AI Unavailable - Using Rule-Based Generation';
         }
     } catch (error) {
         console.error('Failed to check Bedrock status:', error);
         statusElement.className = 'ai-status fallback';
-        iconElement.textContent = '🤖⚠️';
+        iconElement.textContent = '';
         textElement.textContent = 'AI Status Unknown - Using Rule-Based Generation';
     }
 }
