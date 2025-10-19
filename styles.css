@@ -234,6 +234,29 @@ body {
     .highlight-item {
         justify-content: center;
     }
+    
+    /* Modal mobile improvements */
+    .modal {
+        padding: 1rem 0;
+    }
+    
+    .modal-content {
+        margin: 1rem auto;
+        padding: 1.5rem;
+        width: 95%;
+        max-height: calc(100vh - 2rem);
+        border-radius: 10px;
+    }
+    
+    .auth-form .form-group {
+        margin-bottom: 1.25rem;
+    }
+    
+    .close {
+        font-size: 24px;
+        right: 0.75rem;
+        top: 0.75rem;
+    }
 }
 
 /* Navigation */
@@ -434,17 +457,21 @@ body {
     width: 100%;
     height: 100%;
     background-color: rgba(0, 0, 0, 0.5);
+    overflow-y: auto;
+    padding: 2rem 0;
 }
 
 .modal-content {
     background-color: white;
-    margin: 5% auto;
+    margin: 2rem auto;
     padding: 2rem;
     border-radius: 15px;
     width: 90%;
     max-width: 500px;
     position: relative;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    max-height: calc(100vh - 4rem);
+    overflow-y: auto;
 }
 
 .close {
