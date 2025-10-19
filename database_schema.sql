@@ -1,35 +1,6 @@
-# Supabase Setup Guide for EchoLearn
+-- EchoLearn Database Schema for Supabase
+-- Run this in your Supabase SQL Editor
 
-This guide will help you set up Supabase as the database backend for EchoLearn.
-
-## Step 1: Create Supabase Project
-
-1. Go to [supabase.com](https://supabase.com)
-2. Click "Start your project" 
-3. Sign up/Login with GitHub, Google, or email
-4. Click "New Project"
-5. Choose your organization
-6. Fill in project details:
-   - **Name**: `echolearn`
-   - **Database Password**: Choose a strong password (save this!)
-   - **Region**: Choose closest to your users
-7. Click "Create new project"
-8. Wait for project to be created (2-3 minutes)
-
-## Step 2: Get Project Credentials
-
-Once your project is ready:
-
-1. Go to **Settings** → **API**
-2. Copy these values:
-   - **Project URL** (looks like: `https://xxxxx.supabase.co`)
-   - **Project API Keys** → **anon public** key
-
-## Step 3: Database Schema Setup
-
-Go to **SQL Editor** in your Supabase dashboard and run this SQL:
-
-```sql
 -- Enable Row Level Security
 ALTER TABLE auth.users ENABLE ROW LEVEL SECURITY;
 
@@ -155,41 +126,3 @@ CREATE TRIGGER update_notes_updated_at BEFORE UPDATE ON public.notes
 
 CREATE TRIGGER update_flashcards_updated_at BEFORE UPDATE ON public.flashcards
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-```
-
-## Step 4: Configure Authentication
-
-1. Go to **Authentication** → **Settings**
-2. Under **Site URL**, add your domain:
-   - For development: `http://localhost:3000`
-   - For production: `https://echolearn.us`
-3. Under **Redirect URLs**, add:
-   - `http://localhost:3000`
-   - `https://echolearn.us`
-4. Enable **Email confirmations** if desired
-5. Configure **Email templates** if needed
-
-## Step 5: Update Environment Variables
-
-After completing the above steps, you'll need to update your `.env` file with the Supabase credentials.
-
-## Next Steps
-
-Once you have your Supabase project URL and API key:
-1. Update the `.env` file with your credentials
-2. Update `supabase-client.js` with your project details
-3. Restart your server
-4. Test the authentication and database functionality
-
-## Troubleshooting
-
-- **Connection issues**: Check your project URL and API key
-- **Authentication errors**: Verify your site URL and redirect URLs
-- **Database errors**: Check your SQL schema was created correctly
-- **RLS issues**: Ensure Row Level Security policies are properly configured
-
-## Security Notes
-
-- The anon key is safe to use in client-side code
-- Row Level Security (RLS) ensures users can only access their own data
-- Never expose your service role key in client-side code
