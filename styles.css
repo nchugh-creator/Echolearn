@@ -1623,13 +1623,16 @@ body {
 .detail-item label {
     font-weight: 600;
     color: #333;
-    min-width: 150px;
+    min-width: 200px;
+    text-align: left;
+    margin-right: 1rem;
 }
 
 .detail-item span,
 .detail-item p {
     color: #666;
     flex: 1;
+    margin: 0;
 }
 
 .profile-actions {
