@@ -1,40 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EchoLearn - Learning Platform for Students with Disabilities</title>
-    
+
     <!-- SEO Meta Tags -->
-    <meta name="description" content="AI-powered accessibility-focused learning platform for students with disabilities. Features speech-to-text, text-to-speech, and AI flashcards.">
-    <meta name="keywords" content="accessibility, learning disabilities, speech-to-text, text-to-speech, AI flashcards, inclusive education">
+    <meta name="description"
+        content="AI-powered accessibility-focused learning platform for students with disabilities. Features speech-to-text, text-to-speech, and AI flashcards.">
+    <meta name="keywords"
+        content="accessibility, learning disabilities, speech-to-text, text-to-speech, AI flashcards, inclusive education">
     <meta name="author" content="EchoLearn Team">
     <meta name="robots" content="index, follow">
-    
+
     <!-- Open Graph Meta Tags -->
     <meta property="og:title" content="EchoLearn - Accessible Learning Platform">
     <meta property="og:description" content="AI-powered learning platform designed for students with disabilities">
     <meta property="og:url" content="https://echolearn.us">
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="EchoLearn">
-    
+
     <!-- Twitter Card Meta Tags -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="EchoLearn - Accessible Learning Platform">
     <meta name="twitter:description" content="AI-powered learning platform designed for students with disabilities">
-    
+
     <!-- Canonical URL -->
     <link rel="canonical" href="https://echolearn.us">
-    
+
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
-    
+
     <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="chatbot.css">
-    
+
     <!-- Supabase CDN -->
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 </head>
+
 <body>
     <!-- Navigation -->
     <nav class="navbar" role="navigation" aria-label="Main navigation">
@@ -53,11 +56,16 @@
                 </div>
             </div>
             <div class="nav-links" id="navLinks">
-                <button class="nav-btn" onclick="showSection('home')" aria-label="Go to home page" style="display: none;">Home</button>
-                <button class="nav-btn" onclick="showSection('notes')" aria-label="Go to notes section" style="display: none;">Notes</button>
-                <button class="nav-btn" onclick="showSection('flashcards')" aria-label="Go to flashcards section" style="display: none;">Flashcards</button>
-                <button class="nav-btn" onclick="showSection('profile')" aria-label="Go to profile page" style="display: none;">Profile</button>
-                <button class="nav-btn" onclick="showSection('feedback')" aria-label="Go to feedback page" style="display: none;">Feedback</button>
+                <button class="nav-btn" onclick="showSection('home')" aria-label="Go to home page"
+                    style="display: none;">Home</button>
+                <button class="nav-btn" onclick="showSection('notes')" aria-label="Go to notes section"
+                    style="display: none;">Notes</button>
+                <button class="nav-btn" onclick="showSection('flashcards')" aria-label="Go to flashcards section"
+                    style="display: none;">Flashcards</button>
+                <button class="nav-btn" onclick="showSection('profile')" aria-label="Go to profile page"
+                    style="display: none;">Profile</button>
+                <button class="nav-btn" onclick="showSection('feedback')" aria-label="Go to feedback page"
+                    style="display: none;">Feedback</button>
                 <button class="nav-btn" id="authBtn" onclick="showAuth()" aria-label="Login or signup">Login</button>
             </div>
         </div>
@@ -68,7 +76,7 @@
         <div class="modal-content">
             <span class="close" onclick="closeAuth()" aria-label="Close authentication modal">&times;</span>
             <h2 id="authTitle">Login / Sign Up</h2>
-            
+
             <div class="auth-tabs">
                 <button class="tab-btn active" onclick="showLogin()" aria-label="Switch to login form">Login</button>
                 <button class="tab-btn" onclick="showSignup()" aria-label="Switch to signup form">Sign Up</button>
@@ -112,20 +120,15 @@
                     <small id="signupCityHelp">Enter your city</small>
                 </div>
                 <div class="form-group">
-                    <label for="signupAge">Age:</label>
+                    <label for="signupAge">Enter your age only:</label>
                     <input type="number" id="signupAge" min="13" max="100" required aria-describedby="signupAgeHelp">
-                    <small id="signupAgeHelp">Enter your age (13-100)</small>
+                    <small id="signupAgeHelp">Enter your age only</small>
                 </div>
                 <div class="form-group">
                     <label for="signupDisability">Accessibility Needs (Optional):</label>
                     <select id="signupDisability" aria-describedby="signupDisabilityHelp">
                         <option value="">Select if applicable</option>
-                        <option value="visual">Visual Impairment</option>
-                        <option value="hearing">Hearing Impairment</option>
-                        <option value="mobility">Mobility Impairment</option>
-                        <option value="cognitive">Cognitive Disability</option>
-                        <option value="learning">Learning Disability</option>
-                        <option value="other">Other</option>
+                        <option value="cognitive">Cognitive disabilities</option>
                     </select>
                     <small id="signupDisabilityHelp">This helps us customize your experience</small>
                 </div>
@@ -156,35 +159,35 @@
                 </div>
                 <p class="tagline">Your Voice, Your Learning, Your Way</p>
             </div>
-            
+
             <div class="welcome-message">
-                <h2>Hey there!</h2>
-                <p>EchoLearn is a study platform that actually works with how you learn. Whether you need voice controls, screen reader support, or just better study tools - we've got you covered.</p>
-                
+                <h2>Welcome to EchoLearn</h2>
+                <p>An accessibility-focused learning platform designed specifically for students with disabilities.</p>
+
                 <div class="feature-highlights">
                     <div class="highlight-item">
                         <span class="highlight-icon">🎤</span>
-                        <span>Talk instead of type</span>
+                        <span>Speech-to-Text Notes</span>
                     </div>
                     <div class="highlight-item">
                         <span class="highlight-icon">🔊</span>
-                        <span>Listen to your notes</span>
+                        <span>Text-to-Speech Reading</span>
                     </div>
                     <div class="highlight-item">
-                        <span class="highlight-icon">📚</span>
-                        <span>Auto-generate study cards</span>
+                        <span class="highlight-icon">🤖</span>
+                        <span>AI-Powered Flashcards</span>
                     </div>
                     <div class="highlight-item">
-                        <span class="highlight-icon">⚙️</span>
-                        <span>Works with your tools</span>
+                        <span class="highlight-icon">♿</span>
+                        <span>Fully Accessible Design</span>
                     </div>
                 </div>
             </div>
-            
+
             <div class="auth-prompt">
-                <p>Ready to try it? Just sign up and we'll get you started.</p>
+                <p>Please log in or create an account to access your personalized learning experience.</p>
                 <button class="auth-prompt-btn" onclick="showAuth()" aria-label="Open login or signup">
-                    Let's go
+                    Get Started
                 </button>
             </div>
         </div>
@@ -194,87 +197,106 @@
     <main class="main-content" role="main" id="mainContent" style="display: none;">
         <!-- Home Section -->
         <section id="homeSection" class="content-section active">
+            <!-- Hero Section -->
             <div class="hero-section">
                 <div class="hero-content">
-                    <h2>Learning shouldn't have barriers</h2>
-                    <p class="hero-subtitle">We built EchoLearn because every student deserves tools that work with them, not against them.</p>
-                    
+                    <h2>Empowering Learning Through Accessibility</h2>
+                    <p class="hero-subtitle">
+                        EchoLearn transforms how students with disabilities engage with educational content through 
+                        innovative AI-powered tools and inclusive design.
+                    </p>
                     <div class="hero-stats">
                         <div class="stat-item">
-                            <span class="stat-number">3</span>
-                            <span class="stat-label">core tools</span>
-                        </div>
-                        <div class="stat-item">
                             <span class="stat-number">100%</span>
-                            <span class="stat-label">accessible</span>
+                            <span class="stat-label">accessible design</span>
                         </div>
                         <div class="stat-item">
-                            <span class="stat-number">0</span>
-                            <span class="stat-label">barriers</span>
+                            <span class="stat-number">AI</span>
+                            <span class="stat-label">powered tools</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">24/7</span>
+                            <span class="stat-label">availability</span>
                         </div>
                     </div>
                 </div>
             </div>
 
+            <!-- Features Section -->
             <div class="features-section">
                 <div class="section-header">
-                    <h3>What you can do here</h3>
-                    <p>Three simple tools that actually understand how you learn best</p>
+                    <h3>Designed for Every Learning Style</h3>
+                    <p>Our comprehensive suite of accessibility tools adapts to your unique needs and preferences.</p>
                 </div>
-
+                
                 <div class="features-list">
-                    <div class="feature-item" onclick="showSection('notes')">
+                    <div class="feature-item" onclick="showSection('notes')" tabindex="0" role="button" aria-label="Go to Smart Notes section">
                         <div class="feature-icon">🎤</div>
                         <div class="feature-content">
-                            <h4>Voice Notes</h4>
-                            <p>Talk instead of type. We'll turn your voice into text, or read your notes back to you. Perfect when your hands are tired or you learn better by listening.</p>
-                            <span class="feature-link">Try voice notes →</span>
+                            <h4>Smart Notes with Voice</h4>
+                            <p>Transform your thoughts into organized notes using advanced speech-to-text technology. Perfect for students who learn better through speaking than typing.</p>
+                            <span class="feature-link">Explore Smart Notes →</span>
                         </div>
                     </div>
 
-                    <div class="feature-item" onclick="showSection('flashcards')">
-                        <div class="feature-icon">📚</div>
+                    <div class="feature-item" onclick="showSection('notes')" tabindex="0" role="button" aria-label="Go to PDF Reader section">
+                        <div class="feature-icon">🔊</div>
                         <div class="feature-content">
-                            <h4>Study Cards</h4>
-                            <p>Drop in any PDF - textbook chapter, lecture slides, whatever. We'll pull out the important stuff and make study cards for you. No more highlighting everything.</p>
-                            <span class="feature-link">Make study cards →</span>
+                            <h4>PDF Text-to-Speech Reader</h4>
+                            <p>Listen to your study materials with natural-sounding voices. Adjustable speed and pitch settings ensure comfortable learning for everyone.</p>
+                            <span class="feature-link">Try PDF Reader →</span>
                         </div>
                     </div>
 
-                    <div class="feature-item" onclick="showSection('profile')">
+                    <div class="feature-item" onclick="showSection('flashcards')" tabindex="0" role="button" aria-label="Go to AI Flashcards section">
+                        <div class="feature-icon">🤖</div>
+                        <div class="feature-content">
+                            <h4>AI-Generated Flashcards</h4>
+                            <p>Upload any PDF and watch as our AI creates personalized flashcards automatically. Study smarter, not harder.</p>
+                            <span class="feature-link">Generate Flashcards →</span>
+                        </div>
+                    </div>
+
+                    <div class="feature-item" onclick="showSection('profile')" tabindex="0" role="button" aria-label="Go to Profile section">
                         <div class="feature-icon">⚙️</div>
                         <div class="feature-content">
-                            <h4>Your Settings</h4>
-                            <p>Tell us what works for you - screen reader, voice speed, whatever helps. We'll remember so you don't have to set it up every time.</p>
-                            <span class="feature-link">Customize experience →</span>
+                            <h4>Personalized Experience</h4>
+                            <p>Customize your learning environment with accessibility preferences that remember your needs across all sessions.</p>
+                            <span class="feature-link">Manage Profile →</span>
                         </div>
                     </div>
                 </div>
             </div>
 
+            <!-- Getting Started Section -->
             <div class="getting-started">
                 <div class="start-content">
-                    <h3>Ready to start?</h3>
-                    <p>Pick any tool above, or just click around. Everything here works with keyboards, screen readers, and whatever else you use.</p>
-                    
+                    <h3>Ready to Transform Your Learning?</h3>
+                    <p>Join thousands of students who have discovered a more accessible way to learn and study.</p>
                     <div class="quick-actions">
-                        <button class="action-btn primary" onclick="showSection('notes')">
-                            Start with notes
+                        <button class="action-btn primary" onclick="showSection('notes')" aria-label="Start with Smart Notes">
+                            Start Taking Notes
                         </button>
-                        <button class="action-btn secondary" onclick="showSection('feedback')">
-                            Questions? Let us know
+                        <button class="action-btn secondary" onclick="showSection('flashcards')" aria-label="Create AI Flashcards">
+                            Generate Flashcards
                         </button>
                     </div>
                 </div>
             </div>
 
+            <!-- About Section -->
             <div class="about-section">
                 <div class="about-content">
-                    <h4>Why we made this</h4>
-                    <p>Too many learning tools are built without thinking about accessibility. We started with accessibility first, then built the features around that. The result? Tools that work better for everyone.</p>
-                    
+                    <h4>Built with Accessibility in Mind</h4>
+                    <p>
+                        EchoLearn was created by students who understand the challenges of learning with disabilities. 
+                        Every feature is designed to be inclusive, intuitive, and empowering.
+                    </p>
                     <div class="team-note">
-                        <p><em>Built by students who get it. Questions or ideas? We actually read every message you send.</em></p>
+                        <p>
+                            "We believe that every student deserves access to tools that make learning not just possible, 
+                            but enjoyable and effective."
+                        </p>
                     </div>
                 </div>
             </div>
@@ -283,12 +305,12 @@
         <!-- Notes Section -->
         <section id="notesSection" class="content-section">
             <h2>Smart Notes</h2>
-            
+
             <div class="notes-layout">
                 <!-- Left Side: PDF Text-to-Speech -->
                 <div class="pdf-speech-section">
                     <h3>📄 PDF Text-to-Speech</h3>
-                    
+
                     <div class="pdf-upload-area">
                         <input type="file" id="notesPdfFile" accept=".pdf" aria-label="Upload PDF for text-to-speech">
                         <div class="upload-text">
@@ -296,13 +318,13 @@
                             <small>Drag & drop or click to browse</small>
                         </div>
                     </div>
-                    
+
                     <div id="pdfControls" class="pdf-controls" style="display: none;">
                         <div class="pdf-info">
                             <span id="pdfFileName">No file selected</span>
                             <span id="pdfStatus">Ready</span>
                         </div>
-                        
+
                         <div class="speech-controls">
                             <button id="testSpeech" class="control-btn" aria-label="Test speech synthesis">
                                 🎵 Test Voice
@@ -317,7 +339,7 @@
                                 ⏹️ Stop
                             </button>
                         </div>
-                        
+
                         <div class="speech-settings">
                             <div class="setting-row">
                                 <label for="voiceSelect">Voice:</label>
@@ -327,17 +349,19 @@
                             </div>
                             <div class="setting-row">
                                 <label for="speechRate">Speed:</label>
-                                <input type="range" id="speechRate" min="0.5" max="2" step="0.1" value="1" aria-label="Speech rate">
+                                <input type="range" id="speechRate" min="0.5" max="2" step="0.1" value="1"
+                                    aria-label="Speech rate">
                                 <span id="rateValue">1x</span>
                             </div>
                             <div class="setting-row">
                                 <label for="speechPitch">Pitch:</label>
-                                <input type="range" id="speechPitch" min="0.5" max="2" step="0.1" value="1" aria-label="Speech pitch">
+                                <input type="range" id="speechPitch" min="0.5" max="2" step="0.1" value="1"
+                                    aria-label="Speech pitch">
                                 <span id="pitchValue">1x</span>
                             </div>
                         </div>
                     </div>
-                    
+
                     <div id="pdfTextDisplay" class="pdf-text-display">
                         <div id="pdfTextContent" class="pdf-text-content">
                             Upload a PDF to see its content here and have it read aloud.
@@ -350,11 +374,11 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <!-- Right Side: Notes -->
                 <div class="notes-section">
                     <h3>📝 Your Notes</h3>
-                    
+
                     <div class="notes-controls">
                         <div class="speech-controls">
                             <button id="startRecording" class="control-btn" aria-label="Start voice recording">
@@ -370,7 +394,7 @@
                                 ⏸️ Pause
                             </button>
                         </div>
-                        
+
                         <div class="notes-actions">
                             <button id="saveNotes" class="control-btn" aria-label="Save current notes">
                                 💾 Save Notes
@@ -382,8 +406,8 @@
                     </div>
 
                     <div class="notes-container">
-                        <textarea id="notesText" placeholder="Start typing your notes here, or use voice recording..." 
-                                 aria-label="Notes text area" rows="12"></textarea>
+                        <textarea id="notesText" placeholder="Start typing your notes here, or use voice recording..."
+                            aria-label="Notes text area" rows="12"></textarea>
                     </div>
 
                     <div id="savedNotesList" class="saved-notes">
@@ -397,14 +421,14 @@
         <!-- Flashcards Section -->
         <section id="flashcardsSection" class="content-section">
             <h2>AI Flashcard Generator</h2>
-            
+
             <div class="ai-status" id="aiStatus">
                 <div class="status-indicator">
                     <span id="aiStatusIcon">🤖</span>
                     <span id="aiStatusText">Checking AI status...</span>
                 </div>
             </div>
-            
+
             <div class="upload-section">
                 <div class="upload-area" id="uploadArea">
                     <input type="file" id="pdfFile" accept=".pdf" aria-label="Upload PDF file">
@@ -431,7 +455,7 @@
         <!-- Profile Section -->
         <section id="profileSection" class="content-section">
             <h2>Your Profile</h2>
-            
+
             <div id="profileContent" class="profile-container">
                 <div class="profile-card">
                     <div class="profile-header">
@@ -443,7 +467,7 @@
                             <p id="profileLocation"></p>
                         </div>
                     </div>
-                    
+
                     <div class="profile-details">
                         <div class="detail-item">
                             <label>Age:</label>
@@ -458,7 +482,7 @@
                             <p id="profileMemo">-</p>
                         </div>
                     </div>
-                    
+
                     <div class="profile-actions">
                         <button id="editProfile" class="profile-btn" onclick="editProfile()">Edit Profile</button>
                         <button id="logoutBtn" class="profile-btn logout" onclick="logout()">Logout</button>
@@ -470,12 +494,13 @@
         <!-- Feedback Section -->
         <section id="feedbackSection" class="content-section">
             <h2>Share Your Feedback</h2>
-            
+
             <div class="feedback-container">
                 <div class="feedback-intro">
-                    <p>Your feedback helps us make EchoLearn more accessible and effective for students with disabilities. We value your experience and suggestions!</p>
+                    <p>Your feedback helps us make EchoLearn more accessible and effective for students with
+                        disabilities. We value your experience and suggestions!</p>
                 </div>
-                
+
                 <form id="feedbackForm" class="feedback-form">
                     <div class="form-row">
                         <div class="form-group">
@@ -483,14 +508,14 @@
                             <input type="text" id="feedbackName" required aria-describedby="feedbackNameHelp">
                             <small id="feedbackNameHelp">How should we address you in our response?</small>
                         </div>
-                        
+
                         <div class="form-group">
                             <label for="feedbackEmail">Email Address:</label>
                             <input type="email" id="feedbackEmail" required aria-describedby="feedbackEmailHelp">
                             <small id="feedbackEmailHelp">We'll send a copy of your feedback here</small>
                         </div>
                     </div>
-                    
+
                     <div class="form-group">
                         <label for="feedbackType">Feedback Type:</label>
                         <select id="feedbackType" required aria-describedby="feedbackTypeHelp">
@@ -504,27 +529,22 @@
                         </select>
                         <small id="feedbackTypeHelp">Help us categorize your feedback</small>
                     </div>
-                    
+
                     <div class="form-group">
                         <label for="feedbackDisability">Your Accessibility Needs (Optional):</label>
                         <select id="feedbackDisability" aria-describedby="feedbackDisabilityHelp">
                             <option value="">Prefer not to specify</option>
-                            <option value="visual">Visual Impairment</option>
-                            <option value="hearing">Hearing Impairment</option>
-                            <option value="mobility">Mobility Impairment</option>
-                            <option value="cognitive">Cognitive Disability</option>
-                            <option value="learning">Learning Disability</option>
-                            <option value="multiple">Multiple Disabilities</option>
-                            <option value="other">Other</option>
+                            <option value="cognitive">Cognitive disabilities</option>
                             <option value="none">No Disability</option>
                         </select>
                         <small id="feedbackDisabilityHelp">This helps us understand your perspective</small>
                     </div>
-                    
+
                     <div class="form-group">
                         <label for="feedbackRating">Overall Experience Rating:</label>
                         <div class="rating-container">
-                            <div class="star-rating" role="radiogroup" aria-label="Rate your experience from 1 to 5 stars">
+                            <div class="star-rating" role="radiogroup"
+                                aria-label="Rate your experience from 1 to 5 stars">
                                 <input type="radio" id="star5" name="rating" value="5" aria-label="5 stars - Excellent">
                                 <label for="star5" class="star">★</label>
                                 <input type="radio" id="star4" name="rating" value="4" aria-label="4 stars - Very Good">
@@ -539,22 +559,25 @@
                             <span id="ratingText" class="rating-text">Click to rate</span>
                         </div>
                     </div>
-                    
+
                     <div class="form-group">
                         <label for="feedbackSubject">Subject:</label>
-                        <input type="text" id="feedbackSubject" required aria-describedby="feedbackSubjectHelp" maxlength="100">
+                        <input type="text" id="feedbackSubject" required aria-describedby="feedbackSubjectHelp"
+                            maxlength="100">
                         <small id="feedbackSubjectHelp">Brief summary of your feedback (max 100 characters)</small>
                     </div>
-                    
+
                     <div class="form-group">
                         <label for="feedbackMessage">Your Feedback:</label>
-                        <textarea id="feedbackMessage" rows="6" required aria-describedby="feedbackMessageHelp" maxlength="1000"></textarea>
-                        <small id="feedbackMessageHelp">Share your detailed feedback, suggestions, or experiences (max 1000 characters)</small>
+                        <textarea id="feedbackMessage" rows="6" required aria-describedby="feedbackMessageHelp"
+                            maxlength="1000"></textarea>
+                        <small id="feedbackMessageHelp">Share your detailed feedback, suggestions, or experiences (max
+                            1000 characters)</small>
                         <div class="char-counter">
                             <span id="charCount">0</span>/1000 characters
                         </div>
                     </div>
-                    
+
                     <div class="form-group">
                         <div class="checkbox-group">
                             <input type="checkbox" id="feedbackCopy" checked>
@@ -565,17 +588,18 @@
                             <label for="feedbackUpdates">Keep me updated on EchoLearn improvements</label>
                         </div>
                     </div>
-                    
+
                     <div class="form-actions">
                         <button type="button" class="btn-secondary" onclick="clearFeedbackForm()">Clear Form</button>
                         <button type="submit" class="btn-primary">Send Feedback</button>
                     </div>
                 </form>
-                
+
                 <div class="feedback-success" id="feedbackSuccess" style="display: none;">
                     <div class="success-icon">✅</div>
                     <h3>Thank You for Your Feedback!</h3>
-                    <p>Your feedback has been sent successfully. We appreciate your input in making EchoLearn more accessible.</p>
+                    <p>Your feedback has been sent successfully. We appreciate your input in making EchoLearn more
+                        accessible.</p>
                     <p>You should receive a copy of your feedback at your email address shortly.</p>
                     <button class="btn-primary" onclick="resetFeedbackForm()">Send Another Feedback</button>
                 </div>
@@ -594,6 +618,6 @@
 
     <script src="supabase-client.js"></script>
     <script src="script.js"></script>
-    <script src="chatbot.js"></script>
 </body>
+
 </html>
