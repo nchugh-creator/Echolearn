@@ -414,27 +414,34 @@
                 <div class="notes-section">
                     <h3><i class="fas fa-sticky-note"></i> Your Notes</h3>
 
-                    <div class="notes-controls">
-                        <div class="speech-controls">
-                            <button id="startRecording" class="control-btn" aria-label="Start voice recording">
+                    <!-- Note Title Input -->
+                    <div class="note-title-container">
+                        <input type="text" id="noteTitle" placeholder="Enter note title..." 
+                               aria-label="Note title" class="note-title-input">
+                    </div>
+
+                    <!-- Redesigned Controls -->
+                    <div class="notes-controls-redesigned">
+                        <div class="speech-controls-left">
+                            <button id="startRecording" class="control-btn-uniform" aria-label="Start voice recording">
                                 <i class="fas fa-microphone"></i> Start Recording
                             </button>
-                            <button id="stopRecording" class="control-btn" disabled aria-label="Stop voice recording">
+                            <button id="stopRecording" class="control-btn-uniform" disabled aria-label="Stop voice recording">
                                 <i class="fas fa-stop"></i> Stop Recording
                             </button>
-                            <button id="playNotes" class="control-btn" aria-label="Read notes aloud">
+                            <button id="playNotes" class="control-btn-uniform" aria-label="Read notes aloud">
                                 <i class="fas fa-volume-up"></i> Read Notes
                             </button>
-                            <button id="pauseNotesSpeech" class="control-btn" disabled aria-label="Pause notes reading">
+                            <button id="pauseNotesSpeech" class="control-btn-uniform" disabled aria-label="Pause notes reading">
                                 <i class="fas fa-pause"></i> Pause
                             </button>
                         </div>
 
-                        <div class="notes-actions">
-                            <button id="saveNotes" class="control-btn" aria-label="Save current notes">
+                        <div class="notes-actions-right">
+                            <button id="saveNotes" class="control-btn-uniform" aria-label="Save current notes">
                                 <i class="fas fa-save"></i> Save Notes
                             </button>
-                            <button id="clearNotes" class="control-btn" aria-label="Clear all notes">
+                            <button id="clearNotes" class="control-btn-uniform" aria-label="Clear all notes">
                                 <i class="fas fa-trash"></i> Clear
                             </button>
                         </div>
