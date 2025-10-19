@@ -784,18 +784,20 @@ body {
 
 /* Notes Section Layout */
 .notes-layout {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 2rem;
+    display: block;
+    background: #f8f9fa;
+    border-radius: 15px;
+    padding: 2rem;
+    border: 2px solid #e9ecef;
     min-height: 600px;
 }
 
 .pdf-speech-section,
 .notes-section {
-    background: #f8f9fa;
-    border-radius: 15px;
+    background: transparent;
+    border-radius: 0;
     padding: 1.5rem;
-    border: 2px solid #e9ecef;
+    border: none;
     min-height: 600px;
     display: flex;
     flex-direction: column;
@@ -806,9 +808,9 @@ body {
     color: #333;
     margin-bottom: 1rem;
     font-size: 1.3rem;
-    text-align: center;
-    border-bottom: 2px solid #071F35;
-    padding-bottom: 0.5rem;
+    text-align: left;
+    border-bottom: none;
+    padding-bottom: 0;
     font-weight: bold;
 }
 
@@ -859,11 +861,11 @@ body {
 
 /* PDF Controls */
 .pdf-controls {
-    background: white;
+    background: rgba(255, 255, 255, 0.5);
     border-radius: 10px;
     padding: 1rem;
     margin-bottom: 1rem;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .pdf-info {
@@ -1015,9 +1017,9 @@ body {
     gap: 1rem;
     margin-bottom: 1.5rem;
     padding: 1rem;
-    background: white;
+    background: rgba(255, 255, 255, 0.5);
     border-radius: 10px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .speech-controls,
@@ -1083,9 +1085,9 @@ body {
 }
 
 .saved-notes {
-    background: #f8f9fa;
-    padding: 1.5rem;
-    border-radius: 10px;
+    background: transparent;
+    padding: 1rem 0;
+    border-radius: 0;
     flex: 1;
     min-height: 200px;
     font-weight: bold;
@@ -1529,14 +1531,14 @@ body {
     
     /* Notes Layout Mobile */
     .notes-layout {
-        grid-template-columns: 1fr;
-        gap: 1.5rem;
+        padding: 1.5rem;
+        min-height: 400px;
     }
     
     .pdf-speech-section,
     .notes-section {
-        padding: 1rem;
-        min-height: 400px;
+        padding: 1rem 0;
+        min-height: auto;
     }
     
     .notes-controls {
