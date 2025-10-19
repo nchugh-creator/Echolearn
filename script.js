@@ -869,16 +869,55 @@ function pauseNotesSpeech() {
 }
 
 // Notes Management
-function saveNotes() {
+async function saveNotes() {
     const text = document.getElementById('notesText').value;
+    const title = document.getElementById('noteTitle').value;
+    
     if (!text.trim()) {
         showToast('No notes to save', 'error');
         return;
     }
 
+    const noteTitle = title.trim() || `Note ${new Date().toLocaleDateString()}`;
+    
+    // Try to save to Supabase first
+    if (window.SupabaseDB && currentUser) {
+        try {
+            const { data, error } = await SupabaseDB.notes.create({
+                title: noteTitle,
+                content: text.trim(),
+                tags: []
+            });
+            
+            if (error) {
+                console.error('Supabase save error:', error);
+                // Fall back to localStorage
+                saveToLocalStorage(noteTitle, text);
+            } else {
+                showToast('Notes saved to cloud!', 'success');
+                announceToScreenReader('Notes saved to cloud');
+                loadSavedNotes();
+                // Clear the form
+                document.getElementById('notesText').value = '';
+                document.getElementById('noteTitle').value = '';
+                return;
+            }
+        } catch (error) {
+            console.error('Supabase connection error:', error);
+            // Fall back to localStorage
+            saveToLocalStorage(noteTitle, text);
+        }
+    } else {
+        // Save to localStorage if not logged in or Supabase not available
+        saveToLocalStorage(noteTitle, text);
+    }
+}
+
+function saveToLocalStorage(title, content) {
     const note = {
         id: Date.now().toString(),
-        content: text,
+        title: title,
+        content: content,
         date: new Date().toLocaleString(),
         userId: currentUser ? currentUser.id : 'anonymous'
     };
@@ -888,8 +927,12 @@ function saveNotes() {
     localStorage.setItem('savedNotes', JSON.stringify(savedNotes));
 
     loadSavedNotes();
-    showToast('Notes saved successfully!', 'success');
-    announceToScreenReader('Notes saved');
+    showToast('Notes saved locally!', 'success');
+    announceToScreenReader('Notes saved locally');
+    
+    // Clear the form
+    document.getElementById('notesText').value = '';
+    document.getElementById('noteTitle').value = '';
 }
 
 function clearNotes() {
@@ -900,30 +943,70 @@ function clearNotes() {
     }
 }
 
-function loadSavedNotes() {
+async function loadSavedNotes() {
+    const notesList = document.getElementById('notesList');
+    notesList.innerHTML = '<p>Loading notes...</p>';
+    
+    let allNotes = [];
+    
+    // Load from Supabase if available and user is logged in
+    if (window.SupabaseDB && currentUser) {
+        try {
+            const { data, error } = await SupabaseDB.notes.getAll();
+            if (!error && data) {
+                allNotes = data.map(note => ({
+                    id: note.id,
+                    title: note.title,
+                    content: note.content,
+                    date: new Date(note.created_at).toLocaleString(),
+                    userId: note.user_id,
+                    source: 'supabase'
+                }));
+            }
+        } catch (error) {
+            console.error('Error loading notes from Supabase:', error);
+        }
+    }
+    
+    // Also load from localStorage
     const savedNotes = JSON.parse(localStorage.getItem('savedNotes') || '[]');
-    const userNotes = currentUser ?
+    const localNotes = currentUser ?
         savedNotes.filter(note => note.userId === currentUser.id) :
         savedNotes.filter(note => note.userId === 'anonymous');
-
-    const notesList = document.getElementById('notesList');
+    
+    // Add localStorage notes that aren't already in Supabase
+    localNotes.forEach(localNote => {
+        if (!allNotes.find(note => note.content === localNote.content && note.title === localNote.title)) {
+            allNotes.push({
+                ...localNote,
+                source: 'local'
+            });
+        }
+    });
+    
+    // Sort by date (newest first)
+    allNotes.sort((a, b) => new Date(b.date) - new Date(a.date));
+    
     notesList.innerHTML = '';
 
-    if (userNotes.length === 0) {
+    if (allNotes.length === 0) {
         notesList.innerHTML = '<p>No saved notes yet.</p>';
         return;
     }
 
-    userNotes.forEach(note => {
+    allNotes.forEach(note => {
         const noteElement = document.createElement('div');
         noteElement.className = 'note-item';
         noteElement.innerHTML = `
-            <div class="note-date">${note.date}</div>
+            <div class="note-header">
+                <div class="note-title">${note.title || 'Untitled Note'}</div>
+                <div class="note-date">${note.date} ${note.source === 'supabase' ? '☁️' : '💾'}</div>
+            </div>
             <div class="note-content">${note.content.substring(0, 100)}${note.content.length > 100 ? '...' : ''}</div>
             <div class="note-actions">
-                <button onclick="loadNote('${note.id}')" aria-label="Load this note">Load</button>
-                <button onclick="deleteNote('${note.id}')" aria-label="Delete this note">Delete</button>
-                <button onclick="readNoteAloud('${note.id}')" aria-label="Read this note aloud">🔊</button>
+                <button onclick="loadNote('${note.id}', '${note.source}')" aria-label="Load this note">Load</button>
+                <button onclick="deleteNote('${note.id}', '${note.source}')" aria-label="Delete this note">Delete</button>
+                <button onclick="readNoteAloud('${note.id}', '${note.source}')" aria-label="Read this note aloud"><i class="fas fa-volume-up"></i></button>
             </div>
         `;
         notesList.appendChild(noteElement);

@@ -624,9 +624,9 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(255, 255, 255, 0.8);
+    background: rgba(255, 255, 255, 0.3);
     border-radius: 12px;
-    border: 1px solid rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.4);
 }
 
 .feature-content {
@@ -914,6 +914,149 @@ body {
     border-bottom: none;
     padding-bottom: 0;
     font-weight: bold;
+}
+
+/* Note Title Input */
+.note-title-container {
+    margin-bottom: 1rem;
+}
+
+.note-title-input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    background: white;
+    transition: border-color 0.3s ease;
+}
+
+.note-title-input:focus {
+    outline: none;
+    border-color: #071F35;
+    box-shadow: 0 0 0 3px rgba(7, 31, 53, 0.1);
+}
+
+/* Redesigned Notes Controls */
+.notes-controls-redesigned {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+}
+
+.speech-controls-left {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.notes-actions-right {
+    display: flex;
+    gap: 0.5rem;
+    margin-left: auto;
+}
+
+/* Uniform Control Buttons */
+.control-btn-uniform {
+    padding: 0.75rem 1rem;
+    background: #071F35;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    min-height: 44px;
+    min-width: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.control-btn-uniform:hover:not(:disabled) {
+    background: #0A2A47;
+    transform: translateY(-2px);
+}
+
+.control-btn-uniform:disabled {
+    background: #ccc;
+    color: #071F35;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.control-btn-uniform:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(7, 31, 53, 0.3);
+}
+
+/* Enhanced Note Item Display */
+.note-item {
+    background: white;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s ease;
+}
+
+.note-item:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.note-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 0.5rem;
+    gap: 1rem;
+}
+
+.note-title {
+    font-weight: bold;
+    font-size: 1.1rem;
+    color: #071F35;
+    flex: 1;
+}
+
+.note-date {
+    font-size: 0.85rem;
+    color: #666;
+    white-space: nowrap;
+}
+
+.note-content {
+    color: #333;
+    line-height: 1.4;
+    margin-bottom: 0.75rem;
+}
+
+.note-actions {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: flex-end;
+}
+
+.note-actions button {
+    padding: 0.25rem 0.5rem;
+    background: #071F35;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    transition: background 0.3s ease;
+}
+
+.note-actions button:hover {
+    background: #0A2A47;
 }
 
 /* PDF Upload Area */
@@ -1480,13 +1623,16 @@ body {
 .detail-item label {
     font-weight: 600;
     color: #333;
-    min-width: 150px;
+    min-width: 200px;
+    text-align: left;
+    margin-right: 1rem;
 }
 
 .detail-item span,
 .detail-item p {
     color: #666;
     flex: 1;
+    margin: 0;
 }
 
 .profile-actions {
@@ -1666,6 +1812,26 @@ body {
     .notes-section {
         padding: 1rem 0;
         min-height: auto;
+    }
+
+    /* Mobile Notes Controls */
+    .notes-controls-redesigned {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .speech-controls-left {
+        justify-content: center;
+    }
+
+    .notes-actions-right {
+        margin-left: 0;
+        justify-content: center;
+    }
+
+    .control-btn-uniform {
+        min-width: 100px;
+        font-size: 0.8rem;
     }
     
     .notes-controls {

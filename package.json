@@ -5,10 +5,10 @@
   "homepage": "https://echolearn.us",
   "main": "server.js",
   "scripts": {
+    "build": "echo 'No build needed'",
     "start": "node server.js",
     "dev": "nodemon server.js",
-    "serve": "python -m http.server 3000",
-    "build": "echo 'Static site - no build needed'"
+    "serve": "python -m http.server 3000"
   },
   "keywords": [
     "accessibility",

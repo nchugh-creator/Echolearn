@@ -86,7 +86,7 @@ app.use(express.static('.'));
 app.use(express.static('public'));
 app.use(express.json());
 
-// Extract text endpoint for PDF text-to-speech in notes
+// Extract text endpoint for PDF text-to-speech in notes (both /extract-text and /api/extract-text)
 app.post('/extract-text', upload.single('pdf'), async (req, res) => {
     try {
         if (!req.file) {
@@ -122,8 +122,81 @@ app.post('/extract-text', upload.single('pdf'), async (req, res) => {
     }
 });
 
-// Upload endpoint for PDF flashcard generation
+app.post('/api/extract-text', upload.single('pdf'), async (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ error: 'No PDF file uploaded' });
+        }
+
+        console.log(`Extracting text from PDF: ${req.file.originalname} (${req.file.size} bytes)`);
+
+        // Parse PDF to extract text
+        const pdfData = await pdfParse(req.file.buffer);
+        const text = pdfData.text;
+
+        if (!text || text.trim().length < 10) {
+            return res.status(400).json({ 
+                error: 'PDF content is too short or could not be extracted' 
+            });
+        }
+
+        res.json({
+            success: true,
+            text: text.trim(),
+            pageCount: pdfData.numpages,
+            textLength: text.length,
+            filename: req.file.originalname
+        });
+
+    } catch (error) {
+        console.error('Error extracting text from PDF:', error);
+        res.status(500).json({ 
+            error: 'Failed to extract text from PDF',
+            details: error.message 
+        });
+    }
+});
+
+// Upload endpoint for PDF flashcard generation (both /upload and /api/upload)
 app.post('/upload', upload.single('pdf'), async (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ error: 'No PDF file uploaded' });
+        }
+
+        console.log(`Processing PDF: ${req.file.originalname} (${req.file.size} bytes)`);
+
+        // Parse PDF
+        const pdfData = await pdfParse(req.file.buffer);
+        const text = pdfData.text;
+
+        if (!text || text.trim().length < 50) {
+            return res.status(400).json({ 
+                error: 'PDF content is too short or could not be extracted' 
+            });
+        }
+
+        // Generate flashcards using AWS Bedrock AI
+        const flashcards = await generateFlashcardsWithBedrock(text, req.file.originalname);
+
+        res.json({
+            success: true,
+            flashcards: flashcards,
+            pageCount: pdfData.numpages,
+            textLength: text.length,
+            filename: req.file.originalname
+        });
+
+    } catch (error) {
+        console.error('Error processing PDF:', error);
+        res.status(500).json({ 
+            error: 'Failed to process PDF',
+            details: error.message 
+        });
+    }
+});
+
+app.post('/api/upload', upload.single('pdf'), async (req, res) => {
     try {
         if (!req.file) {
             return res.status(400).json({ error: 'No PDF file uploaded' });
@@ -457,7 +530,7 @@ function findActionWords(sentences) {
     return [...new Set(actionWords.map(word => word.toLowerCase()))];
 }
 
-// Health check endpoint
+// Health check endpoint (both /health and /api/health for compatibility)
 app.get('/health', (req, res) => {
     res.json({ 
         status: 'OK', 
@@ -475,8 +548,72 @@ app.get('/health', (req, res) => {
     });
 });
 
-// Bedrock configuration check endpoint
+app.get('/api/health', (req, res) => {
+    res.json({ 
+        status: 'OK', 
+        timestamp: new Date().toISOString(),
+        service: 'EchoLearn API',
+        domain: DOMAIN,
+        baseUrl: BASE_URL,
+        version: process.env.npm_package_version || '1.0.0',
+        features: {
+            speechToText: true,
+            textToSpeech: true,
+            aiFlashcards: !!process.env.AWS_ACCESS_KEY_ID,
+            emailFeedback: !!process.env.EMAIL_USER || !!process.env.SENDGRID_API_KEY
+        }
+    });
+});
+
+// Bedrock configuration check endpoint (both /bedrock-status and /api/bedrock-status)
 app.get('/bedrock-status', async (req, res) => {
+    try {
+        // Test Bedrock connection with a simple request
+        const testPrompt = "Hello, this is a test. Please respond with 'Bedrock is working'.";
+        
+        const requestBody = {
+            anthropic_version: "bedrock-2023-05-31",
+            max_tokens: 50,
+            temperature: 0.1,
+            messages: [
+                {
+                    role: "user",
+                    content: testPrompt
+                }
+            ]
+        };
+
+        const command = new InvokeModelCommand({
+            modelId: BEDROCK_MODEL_ID,
+            contentType: 'application/json',
+            body: JSON.stringify(requestBody)
+        });
+
+        const response = await bedrockClient.send(command);
+        const responseBody = JSON.parse(new TextDecoder().decode(response.body));
+        
+        res.json({
+            status: 'connected',
+            model: BEDROCK_MODEL_ID,
+            region: process.env.AWS_REGION || 'us-east-1',
+            testResponse: responseBody.content[0].text,
+            timestamp: new Date().toISOString()
+        });
+        
+    } catch (error) {
+        console.error('Bedrock connection test failed:', error);
+        res.status(500).json({
+            status: 'error',
+            model: BEDROCK_MODEL_ID,
+            region: process.env.AWS_REGION || 'us-east-1',
+            error: error.message,
+            fallback: 'Will use rule-based generation',
+            timestamp: new Date().toISOString()
+        });
+    }
+});
+
+app.get('/api/bedrock-status', async (req, res) => {
     try {
         // Test Bedrock connection with a simple request
         const testPrompt = "Hello, this is a test. Please respond with 'Bedrock is working'.";
@@ -787,8 +924,51 @@ function getFallbackResponse(message) {
 **Please try asking again in a moment, or use our Feedback form for personalized help!**`;
 }
 
-// Feedback submission endpoint
+// Feedback submission endpoint (both /submit-feedback and /api/submit-feedback)
 app.post('/submit-feedback', async (req, res) => {
+    try {
+        const feedback = req.body;
+        
+        // Validate required fields
+        if (!feedback.name || !feedback.email || !feedback.subject || !feedback.message) {
+            return res.status(400).json({ 
+                error: 'Missing required fields' 
+            });
+        }
+        
+        console.log('📝 New feedback received from:', feedback.name);
+        
+        // Save feedback to file/database (for backup)
+        const feedbackRecord = {
+            ...feedback,
+            id: Date.now().toString(),
+            receivedAt: new Date().toISOString()
+        };
+        
+        // Log feedback (in production, save to database)
+        console.log('Feedback Record:', JSON.stringify(feedbackRecord, null, 2));
+        
+        // Send emails if configured
+        if (emailTransporter) {
+            await sendFeedbackEmails(feedback);
+        }
+        
+        res.json({
+            success: true,
+            message: 'Feedback submitted successfully',
+            id: feedbackRecord.id
+        });
+        
+    } catch (error) {
+        console.error('Feedback submission error:', error);
+        res.status(500).json({
+            error: 'Failed to submit feedback',
+            details: error.message
+        });
+    }
+});
+
+app.post('/api/submit-feedback', async (req, res) => {
     try {
         const feedback = req.body;
         
@@ -972,9 +1152,19 @@ app.use((req, res) => {
     });
 });
 
-app.listen(PORT, () => {
-    console.log(`🚀 EchoLearn server running on http://localhost:${PORT}`);
+app.listen(PORT, '0.0.0.0', () => {
+    const networkInterfaces = require('os').networkInterfaces();
+    const localIP = Object.values(networkInterfaces)
+        .flat()
+        .find(iface => iface.family === 'IPv4' && !iface.internal)?.address;
+    
+    console.log(`🚀 EchoLearn server running on:`);
+    console.log(`   Local:    http://localhost:${PORT}`);
+    if (localIP) {
+        console.log(`   Network:  http://${localIP}:${PORT}`);
+    }
     console.log(`🌐 Production domain: ${BASE_URL}`);
     console.log(`📚 Features: PDF Flashcards, Speech-to-Text, Text-to-Speech, User Profiles`);
     console.log(`♿ Accessibility-focused learning platform for students with disabilities`);
+    console.log(`📱 Access from other devices using the Network URL above`);
 });
