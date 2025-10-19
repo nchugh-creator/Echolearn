@@ -1956,11 +1956,11 @@ input[type="radio"]:hover {
     font-size: 1.1rem;
 }
 
-.earning-section, .store-section, .transactions-section, .achievements-section {
+.earning-section, .visa-section, .store-section, .transactions-section, .achievements-section {
     margin-bottom: 3rem;
 }
 
-.earning-section h3, .store-section h3, .transactions-section h3, .achievements-section h3 {
+.earning-section h3, .visa-section h3, .store-section h3, .transactions-section h3, .achievements-section h3 {
     color: #071F35;
     font-size: 1.8rem;
     margin-bottom: 1.5rem;
@@ -2145,8 +2145,446 @@ input[type="radio"]:hover {
     }
 }
 
+/* VISA Gift Cards Styling */
+.visa-banner {
+    background: linear-gradient(135deg, #1a1f71 0%, #0f4c75 100%);
+    color: white;
+    border-radius: 15px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    box-shadow: 0 10px 30px rgba(26, 31, 113, 0.3);
+}
+
+.visa-logo {
+    font-size: 3rem;
+    font-weight: bold;
+    font-family: 'Arial', sans-serif;
+    letter-spacing: 0.2em;
+    color: #ffffff;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+.visa-message h4 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.visa-message p {
+    margin: 0;
+    opacity: 0.9;
+    font-size: 1.1rem;
+    line-height: 1.4;
+}
+
+.visa-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.visa-card-item {
+    background: white;
+    border-radius: 20px;
+    padding: 1.5rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    border: 2px solid #f0f0f0;
+    transition: all 0.3s ease;
+    overflow: hidden;
+    position: relative;
+}
+
+.visa-card-item:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 40px rgba(26, 31, 113, 0.2);
+    border-color: #1a1f71;
+}
+
+.visa-card-visual {
+    background: linear-gradient(135deg, #1a1f71 0%, #0f4c75 100%);
+    color: white;
+    border-radius: 15px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    position: relative;
+    min-height: 120px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.visa-card-visual.premium {
+    background: linear-gradient(135deg, #d4af37 0%, #ffd700 100%);
+    color: #000;
+}
+
+.card-chip {
+    font-size: 1.5rem;
+    align-self: flex-start;
+}
+
+.card-amount {
+    font-size: 2.5rem;
+    font-weight: bold;
+    text-align: center;
+    margin: 0.5rem 0;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+.card-brand {
+    font-size: 1rem;
+    font-weight: bold;
+    text-align: right;
+    letter-spacing: 0.1em;
+}
+
+.premium-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(255,255,255,0.2);
+    padding: 0.25rem 0.5rem;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+
+.visa-card-info h4 {
+    color: #071F35;
+    font-size: 1.3rem;
+    margin: 0 0 0.5rem 0;
+    font-weight: bold;
+}
+
+.visa-card-info p {
+    color: #666;
+    margin: 0 0 1rem 0;
+    line-height: 1.4;
+}
+
+.conversion-rate {
+    background: #f8f9fa;
+    padding: 0.75rem;
+    border-radius: 10px;
+    text-align: center;
+    font-weight: bold;
+    color: #071F35;
+    margin-bottom: 1rem;
+    border: 2px solid #e9ecef;
+}
+
+.visa-redeem-btn {
+    width: 100%;
+    background: #1a1f71;
+    color: white;
+    border: none;
+    border-radius: 25px;
+    padding: 1rem;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.visa-redeem-btn:hover {
+    background: #0f4c75;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(26, 31, 113, 0.4);
+}
+
+.visa-redeem-btn.premium {
+    background: linear-gradient(135deg, #d4af37 0%, #ffd700 100%);
+    color: #000;
+}
+
+.visa-redeem-btn.premium:hover {
+    background: linear-gradient(135deg, #b8941f 0%, #e6c200 100%);
+}
+
+.visa-redeem-btn:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.visa-info-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.visa-benefits, .visa-terms {
+    background: white;
+    border-radius: 15px;
+    padding: 1.5rem;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.visa-benefits h4, .visa-terms h4 {
+    color: #071F35;
+    margin: 0 0 1rem 0;
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.visa-benefits ul, .visa-terms ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.visa-benefits li, .visa-terms li {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #f0f0f0;
+    line-height: 1.4;
+}
+
+.visa-benefits li:last-child, .visa-terms li:last-child {
+    border-bottom: none;
+}
+
+.visa-benefits li strong {
+    color: #1a1f71;
+}
+
+/* VISA Card Animation */
+.visa-processing {
+    position: relative;
+}
+
+.visa-processing::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+    animation: visaShimmer 2s infinite;
+}
+
+@keyframes visaShimmer {
+    0% { left: -100%; }
+    100% { left: 100%; }
+}
+
+/* VISA Success Modal */
+.visa-success-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    padding: 2rem;
+}
+
+.visa-success-content {
+    background: white;
+    border-radius: 20px;
+    padding: 2rem;
+    max-width: 500px;
+    width: 100%;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    animation: modalSlideIn 0.5s ease-out;
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-50px) scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.visa-success-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+.visa-success-header h2 {
+    color: #071F35;
+    margin: 0;
+    font-size: 1.5rem;
+}
+
+.visa-close-btn {
+    background: none;
+    border: none;
+    font-size: 2rem;
+    cursor: pointer;
+    color: #666;
+    padding: 0;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.visa-close-btn:hover {
+    background: #f0f0f0;
+    color: #333;
+}
+
+.visa-card-display {
+    margin: 1.5rem 0;
+    display: flex;
+    justify-content: center;
+}
+
+.virtual-card {
+    background: linear-gradient(135deg, #1a1f71 0%, #0f4c75 100%);
+    color: white;
+    border-radius: 15px;
+    padding: 1.5rem;
+    width: 300px;
+    height: 180px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-shadow: 0 10px 30px rgba(26, 31, 113, 0.3);
+}
+
+.card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.card-chip {
+    font-size: 1.5rem;
+}
+
+.card-logo {
+    font-size: 1.2rem;
+    font-weight: bold;
+    letter-spacing: 0.1em;
+}
+
+.card-number {
+    font-size: 1.2rem;
+    font-weight: bold;
+    letter-spacing: 0.2em;
+    text-align: center;
+    margin: 1rem 0;
+}
+
+.card-details {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+}
+
+.card-amount {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.card-expiry {
+    font-size: 0.9rem;
+    opacity: 0.9;
+}
+
+.visa-instructions {
+    margin: 1.5rem 0;
+}
+
+.visa-instructions h3 {
+    color: #071F35;
+    margin: 0 0 1rem 0;
+    font-size: 1.2rem;
+}
+
+.visa-instructions ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.visa-instructions li {
+    padding: 0.5rem 0;
+    color: #666;
+    line-height: 1.4;
+}
+
+.visa-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.visa-btn {
+    flex: 1;
+    padding: 1rem;
+    border: none;
+    border-radius: 10px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.visa-btn.primary {
+    background: #1a1f71;
+    color: white;
+}
+
+.visa-btn.primary:hover {
+    background: #0f4c75;
+    transform: translateY(-2px);
+}
+
+.visa-btn.secondary {
+    background: #f0f0f0;
+    color: #333;
+}
+
+.visa-btn.secondary:hover {
+    background: #e0e0e0;
+}
+
 /* Mobile Responsive */
 @media (max-width: 768px) {
+    .visa-banner {
+        flex-direction: column;
+        text-align: center;
+        gap: 1rem;
+    }
+    
+    .visa-logo {
+        font-size: 2.5rem;
+    }
+    
+    .visa-cards-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .visa-info-section {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
     .balance-header {
         flex-direction: column;
         text-align: center;

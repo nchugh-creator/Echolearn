@@ -232,17 +232,49 @@ CREATE TABLE public.reward_redemptions (
     redeemed_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
+-- VISA Gift Cards Table
+CREATE TABLE public.visa_gift_cards (
+    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+    user_id UUID REFERENCES public.users(id) ON DELETE CASCADE NOT NULL,
+    card_number VARCHAR(16) NOT NULL,
+    amount_usd INTEGER NOT NULL,
+    coins_spent INTEGER NOT NULL,
+    expiry_date DATE NOT NULL,
+    status VARCHAR(20) DEFAULT 'active' CHECK (status IN ('active', 'used', 'expired')),
+    issued_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    used_at TIMESTAMP WITH TIME ZONE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- VISA Redemption Requests Table
+CREATE TABLE public.visa_redemption_requests (
+    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+    user_id UUID REFERENCES public.users(id) ON DELETE CASCADE NOT NULL,
+    amount_usd INTEGER NOT NULL,
+    coins_spent INTEGER NOT NULL,
+    status VARCHAR(20) DEFAULT 'pending' CHECK (status IN ('pending', 'processing', 'completed', 'failed')),
+    request_data JSONB,
+    processed_at TIMESTAMP WITH TIME ZONE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
 -- Indexes for rewards system
 CREATE INDEX idx_user_rewards_user_id ON public.user_rewards(user_id);
 CREATE INDEX idx_reward_transactions_user_id ON public.reward_transactions(user_id);
 CREATE INDEX idx_user_achievements_user_id ON public.user_achievements(user_id);
 CREATE INDEX idx_reward_redemptions_user_id ON public.reward_redemptions(user_id);
+CREATE INDEX idx_visa_gift_cards_user_id ON public.visa_gift_cards(user_id);
+CREATE INDEX idx_visa_redemption_requests_user_id ON public.visa_redemption_requests(user_id);
+CREATE INDEX idx_visa_gift_cards_status ON public.visa_gift_cards(status);
+CREATE INDEX idx_visa_redemption_requests_status ON public.visa_redemption_requests(status);
 
 -- RLS Policies for rewards system
 ALTER TABLE public.user_rewards ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.reward_transactions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.user_achievements ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.reward_redemptions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.visa_gift_cards ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.visa_redemption_requests ENABLE ROW LEVEL SECURITY;
 
 -- User rewards policies
 CREATE POLICY "Users can view own rewards" ON public.user_rewards
@@ -277,6 +309,26 @@ CREATE POLICY "Users can view own redemptions" ON public.reward_redemptions
 
 CREATE POLICY "Users can insert own redemptions" ON public.reward_redemptions
   FOR INSERT WITH CHECK (auth.uid() = user_id);
+
+-- VISA gift cards policies
+CREATE POLICY "Users can view own gift cards" ON public.visa_gift_cards
+  FOR SELECT USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can insert own gift cards" ON public.visa_gift_cards
+  FOR INSERT WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Users can update own gift cards" ON public.visa_gift_cards
+  FOR UPDATE USING (auth.uid() = user_id);
+
+-- VISA redemption requests policies
+CREATE POLICY "Users can view own visa requests" ON public.visa_redemption_requests
+  FOR SELECT USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can insert own visa requests" ON public.visa_redemption_requests
+  FOR INSERT WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Users can update own visa requests" ON public.visa_redemption_requests
+  FOR UPDATE USING (auth.uid() = user_id);
 
 -- Triggers for rewards system
 CREATE TRIGGER update_user_rewards_updated_at BEFORE UPDATE ON public.user_rewards
