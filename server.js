@@ -546,6 +546,247 @@ app.use((error, req, res, next) => {
     });
 });
 
+// Chatbot endpoint - AWS Bedrock integration
+app.post('/chatbot', async (req, res) => {
+    try {
+        const { message, context } = req.body;
+        
+        if (!message || !message.trim()) {
+            return res.status(400).json({ 
+                error: 'Message is required' 
+            });
+        }
+        
+        console.log('🤖 Chatbot query:', message);
+        
+        // Generate AI response
+        const response = await generateChatbotResponse(message, context);
+        
+        res.json({
+            success: true,
+            response: response,
+            timestamp: new Date().toISOString()
+        });
+        
+    } catch (error) {
+        console.error('Chatbot error:', error);
+        res.status(500).json({
+            error: 'Failed to generate response',
+            response: getFallbackResponse(req.body.message),
+            timestamp: new Date().toISOString()
+        });
+    }
+});
+
+async function generateChatbotResponse(message, context) {
+    // If Bedrock is not configured, use rule-based responses
+    if (!bedrockClient || !process.env.AWS_ACCESS_KEY_ID) {
+        return generateRuleBasedResponse(message, context);
+    }
+    
+    try {
+        const prompt = createChatbotPrompt(message, context);
+        
+        const requestBody = {
+            anthropic_version: "bedrock-2023-05-31",
+            max_tokens: 1000,
+            temperature: 0.7,
+            messages: [
+                {
+                    role: "user",
+                    content: prompt
+                }
+            ]
+        };
+
+        const command = new InvokeModelCommand({
+            modelId: BEDROCK_MODEL_ID,
+            contentType: 'application/json',
+            body: JSON.stringify(requestBody)
+        });
+
+        console.log('🤖 Invoking Bedrock for chatbot response...');
+        const response = await bedrockClient.send(command);
+        
+        const responseBody = JSON.parse(new TextDecoder().decode(response.body));
+        const aiResponse = responseBody.content[0].text;
+        
+        console.log('🤖 Bedrock chatbot response generated');
+        return aiResponse;
+        
+    } catch (error) {
+        console.error('Bedrock chatbot error:', error);
+        return generateRuleBasedResponse(message, context);
+    }
+}
+
+function createChatbotPrompt(message, context) {
+    return `You are an accessibility assistant for EchoLearn, a learning platform designed for students with disabilities. You are helpful, empathetic, and knowledgeable about accessibility features.
+
+PLATFORM CONTEXT:
+- EchoLearn helps students with disabilities through speech-to-text, text-to-speech, AI flashcards, and accessible design
+- Current user section: ${context?.currentSection || 'unknown'}
+- User is logged in: ${context?.isLoggedIn || false}
+- User disability type: ${context?.userDisability || 'not specified'}
+- Browser support: Speech recognition: ${context?.browserSupport?.speechRecognition || false}, Speech synthesis: ${context?.browserSupport?.speechSynthesis || false}
+
+FEATURES YOU CAN HELP WITH:
+1. Speech-to-Text Notes: Voice recording for note-taking
+2. Text-to-Speech: Reading notes and PDFs aloud with voice controls
+3. AI Flashcards: PDF upload and automatic flashcard generation
+4. Accessibility Settings: Voice selection, speed controls, keyboard navigation
+5. User Profiles: Accessibility preferences and settings
+6. Navigation: How to use different sections of the platform
+
+RESPONSE GUIDELINES:
+- Be concise but helpful (2-4 sentences usually)
+- Focus on accessibility and inclusion
+- Provide specific, actionable steps
+- Be empathetic to disability-related challenges
+- Use clear, simple language
+- Include relevant emojis for visual clarity
+- If technical issues, suggest alternatives
+
+USER QUESTION: "${message}"
+
+Provide a helpful, accessible response:`;
+}
+
+function generateRuleBasedResponse(message, context) {
+    const lowerMessage = message.toLowerCase();
+    
+    // Speech-to-text help
+    if (lowerMessage.includes('speech') && (lowerMessage.includes('text') || lowerMessage.includes('voice') || lowerMessage.includes('record'))) {
+        return `🎤 **Speech-to-Text Help:**
+
+To use voice recording:
+1. Go to the **Notes** section
+2. Click the **🎤 Start Recording** button
+3. Speak clearly into your microphone
+4. Click **⏹️ Stop Recording** when done
+5. Your speech will appear as text automatically
+
+**Tip:** Make sure your browser allows microphone access when prompted!`;
+    }
+    
+    // Text-to-speech help
+    if (lowerMessage.includes('text') && lowerMessage.includes('speech') || lowerMessage.includes('read aloud')) {
+        return `🔊 **Text-to-Speech Help:**
+
+To have text read aloud:
+1. **For Notes:** Type or record notes, then click **🔊 Read Aloud**
+2. **For PDFs:** Upload a PDF in Notes section, then click **🔊 Read PDF Aloud**
+3. **Voice Settings:** Adjust speed and pitch with the controls
+4. **Voice Selection:** Choose different voices from the dropdown
+
+**Tip:** You can pause/resume playback anytime!`;
+    }
+    
+    // Flashcards help
+    if (lowerMessage.includes('flashcard') || lowerMessage.includes('pdf') || lowerMessage.includes('study')) {
+        return `🃏 **Flashcards Help:**
+
+To create AI flashcards:
+1. Go to the **Flashcards** section
+2. **Upload a PDF** by dragging/dropping or clicking browse
+3. Click **Generate Flashcards** 
+4. Wait for AI processing (uses AWS Bedrock)
+5. Study with interactive flip cards
+
+**Navigation:** Use arrow keys or click to flip cards. Perfect for accessible studying!`;
+    }
+    
+    // Accessibility features
+    if (lowerMessage.includes('accessibility') || lowerMessage.includes('disability') || lowerMessage.includes('accessible')) {
+        return `♿ **Accessibility Features:**
+
+EchoLearn is designed for students with disabilities:
+• **Full keyboard navigation** - Tab through all features
+• **Screen reader support** - ARIA labels and semantic HTML
+• **Voice controls** - Speech-to-text and text-to-speech
+• **High contrast support** - Adapts to your system settings
+• **Touch accessibility** - 44px minimum touch targets
+• **Reduced motion** - Respects motion sensitivity preferences
+
+**Profile Settings:** Update your accessibility needs in your profile for a personalized experience!`;
+    }
+    
+    // Navigation help
+    if (lowerMessage.includes('navigate') || lowerMessage.includes('how to use') || lowerMessage.includes('getting started')) {
+        return `🧭 **Navigation Help:**
+
+**Main Sections:**
+• **Home** - Overview and feature access
+• **Notes** - Speech-to-text recording and PDF reading
+• **Flashcards** - AI-powered study cards from PDFs
+• **Profile** - Your accessibility preferences
+• **Feedback** - Share suggestions with our team
+
+**Keyboard Navigation:** Press Tab to move between elements, Enter to activate, Escape to close modals.
+
+**Need specific help?** Ask about any feature!`;
+    }
+    
+    // Login/account help
+    if (lowerMessage.includes('login') || lowerMessage.includes('account') || lowerMessage.includes('sign')) {
+        return `👤 **Account Help:**
+
+**To Sign Up:**
+1. Click **Get Started** on the home page
+2. Fill in your information including accessibility needs
+3. This helps us customize your experience
+
+**Benefits of Having an Account:**
+• Save notes across devices
+• Store flashcard sets
+• Personalized accessibility settings
+• Track your learning progress
+
+**Privacy:** Your accessibility information helps us serve you better and is kept confidential.`;
+    }
+    
+    // Technical issues
+    if (lowerMessage.includes('not working') || lowerMessage.includes('error') || lowerMessage.includes('problem')) {
+        return `🔧 **Technical Support:**
+
+**Common Solutions:**
+• **Microphone issues:** Check browser permissions and try refreshing
+• **Speech not working:** Ensure speakers/headphones are connected
+• **PDF upload fails:** Try smaller files (under 10MB) or different PDFs
+• **Features missing:** Make sure you're logged in
+
+**Browser Compatibility:** Chrome and Edge work best for all features.
+
+**Still having issues?** Use the Feedback form to contact our support team with specific details!`;
+    }
+    
+    // Default helpful response
+    return `👋 **I'm here to help with EchoLearn!**
+
+I can assist you with:
+• **🎤 Speech-to-text** recording and voice features
+• **🔊 Text-to-speech** for reading notes and PDFs
+• **🃏 AI flashcards** from PDF uploads
+• **♿ Accessibility** settings and navigation
+• **📱 Platform features** and how to use them
+
+**What would you like help with?** Just ask about any feature or accessibility need!
+
+**Quick Tips:** Try asking "How do I use speech-to-text?" or "Help with flashcards"`;
+}
+
+function getFallbackResponse(message) {
+    return `I apologize, but I'm having trouble connecting to my AI service right now. 
+
+**Here are some quick resources:**
+• **Speech Help:** Click 🎤 in Notes section for voice recording
+• **Reading Help:** Upload PDFs in Notes for text-to-speech
+• **Flashcards:** Upload PDFs in Flashcards section for AI generation
+• **Support:** Use the Feedback form for detailed assistance
+
+**Please try asking again in a moment, or use our Feedback form for personalized help!**`;
+}
+
 // Feedback submission endpoint
 app.post('/submit-feedback', async (req, res) => {
     try {
