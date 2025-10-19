@@ -6,10 +6,10 @@
 }
 
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: Tahoma, sans-serif;
     line-height: 1.6;
     color: #333;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: #B6CFF7;
     min-height: 100vh;
 }
 
@@ -37,7 +37,7 @@ body {
     left: 0;
     width: 100%;
     height: 100vh;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: #B6CFF7;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -46,13 +46,13 @@ body {
 }
 
 .login-required-content {
-    background: white;
+    background: #E3D2CE;
     border-radius: 20px;
     padding: 3rem;
     max-width: 600px;
     width: 100%;
     text-align: center;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
     animation: fadeInUp 0.6s ease-out;
 }
 
@@ -94,7 +94,7 @@ body {
 
 .wave {
     width: 6px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: #2d3748;
     border-radius: 3px;
     animation: waveAnimation 2s ease-in-out infinite;
 }
@@ -132,7 +132,7 @@ body {
 }
 
 .brand-logo h1 {
-    color: #667eea;
+    color: #2d3748;
     font-size: 3rem;
     margin: 0;
     font-weight: 700;
@@ -194,7 +194,7 @@ body {
 }
 
 .auth-prompt-btn {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: #2d3748;
     color: white;
     border: none;
     padding: 1rem 2rem;
@@ -208,12 +208,13 @@ body {
 
 .auth-prompt-btn:hover, .auth-prompt-btn:focus {
     transform: translateY(-3px);
-    box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+    box-shadow: 0 10px 25px rgba(45, 55, 72, 0.4);
     outline: none;
+    background: #1a202c;
 }
 
 .auth-prompt-btn:focus {
-    box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4), 0 0 0 3px rgba(102, 126, 234, 0.3);
+    box-shadow: 0 10px 25px rgba(45, 55, 72, 0.4), 0 0 0 3px rgba(45, 55, 72, 0.3);
 }
 
 /* Mobile responsive for login overlay */
@@ -238,7 +239,7 @@ body {
 
 /* Navigation */
 .navbar {
-    background: rgba(255, 255, 255, 0.95);
+    background: rgba(227, 210, 206, 0.95);
     backdrop-filter: blur(10px);
     padding: 1rem 0;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
@@ -281,7 +282,7 @@ body {
 
 .nav-wave {
     width: 3px;
-    background: #667eea;
+    background: #2d3748;
     border-radius: 2px;
     animation: navWaveAnimation 1.5s ease-in-out infinite;
 }
@@ -313,7 +314,7 @@ body {
 }
 
 .nav-brand h1 {
-    color: #667eea;
+    color: #2d3748;
     font-size: 1.8rem;
     font-weight: 700;
     margin: 0;
@@ -338,14 +339,14 @@ body {
 }
 
 .nav-btn:hover, .nav-btn:focus {
-    background: #667eea;
-    color: white;
-    border-color: #667eea;
+    background: #E3D2CE;
+    color: #2d3748;
+    border-color: #E3D2CE;
     outline: none;
 }
 
 .nav-btn:focus {
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.3);
+    box-shadow: 0 0 0 3px rgba(227, 210, 206, 0.5);
 }
 
 /* Main Content */
@@ -357,7 +358,7 @@ body {
 
 .content-section {
     display: none;
-    background: white;
+    background: #E3D2CE;
     border-radius: 15px;
     padding: 2rem;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
@@ -379,7 +380,7 @@ body {
 .hero-section {
     padding: 3rem 0;
     text-align: center;
-    background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+    background: rgba(255, 255, 255, 0.3);
     border-radius: 20px;
     margin-bottom: 3rem;
 }
@@ -417,7 +418,7 @@ body {
     display: block;
     font-size: 2.5rem;
     font-weight: 700;
-    color: #667eea;
+    color: #2d3748;
     line-height: 1;
 }
 
@@ -466,17 +467,18 @@ body {
     align-items: flex-start;
     gap: 1.5rem;
     padding: 2rem;
-    background: white;
+    background: rgba(255, 255, 255, 0.6);
     border-radius: 12px;
-    border: 1px solid #e2e8f0;
+    border: 1px solid rgba(255, 255, 255, 0.8);
     cursor: pointer;
     transition: all 0.2s ease;
 }
 
 .feature-item:hover {
-    border-color: #667eea;
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.1);
+    border-color: rgba(255, 255, 255, 1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     transform: translateY(-2px);
+    background: rgba(255, 255, 255, 0.8);
 }
 
 .feature-icon {
@@ -487,9 +489,9 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: #f7fafc;
+    background: rgba(255, 255, 255, 0.8);
     border-radius: 12px;
-    border: 1px solid #e2e8f0;
+    border: 1px solid rgba(255, 255, 255, 0.9);
 }
 
 .feature-content {
@@ -510,23 +512,23 @@ body {
 }
 
 .feature-link {
-    color: #667eea;
+    color: #2d3748;
     font-weight: 500;
     font-size: 0.95rem;
 }
 
 .feature-item:hover .feature-link {
-    color: #5a67d8;
+    color: #1a202c;
 }
 
 /* Getting Started Section */
 .getting-started {
-    background: #f7fafc;
+    background: rgba(255, 255, 255, 0.4);
     padding: 2.5rem;
     border-radius: 15px;
     text-align: center;
     margin-bottom: 3rem;
-    border: 1px solid #e2e8f0;
+    border: 1px solid rgba(255, 255, 255, 0.6);
 }
 
 .start-content h3 {
@@ -564,25 +566,25 @@ body {
 }
 
 .action-btn.primary {
-    background: #667eea;
+    background: #2d3748;
     color: white;
 }
 
 .action-btn.primary:hover, .action-btn.primary:focus {
-    background: #5a67d8;
+    background: #1a202c;
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    box-shadow: 0 4px 12px rgba(45, 55, 72, 0.3);
 }
 
 .action-btn.secondary {
-    background: white;
-    color: #4a5568;
-    border: 1px solid #e2e8f0;
+    background: rgba(255, 255, 255, 0.8);
+    color: #2d3748;
+    border: 1px solid rgba(255, 255, 255, 0.9);
 }
 
 .action-btn.secondary:hover, .action-btn.secondary:focus {
-    border-color: #cbd5e0;
-    background: #f7fafc;
+    border-color: rgba(255, 255, 255, 1);
+    background: rgba(255, 255, 255, 0.9);
 }
 
 /* About Section */
@@ -607,10 +609,10 @@ body {
 }
 
 .team-note {
-    background: rgba(102, 126, 234, 0.05);
+    background: rgba(255, 255, 255, 0.3);
     padding: 1.5rem;
     border-radius: 10px;
-    border-left: 4px solid #667eea;
+    border-left: 4px solid #2d3748;
     max-width: 500px;
     margin: 0 auto;
 }

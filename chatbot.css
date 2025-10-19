@@ -5,13 +5,13 @@
     position: fixed;
     bottom: 20px;
     right: 20px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: #2d3748;
     color: white;
     border: none;
     border-radius: 50px;
     padding: 15px 20px;
     cursor: pointer;
-    box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
+    box-shadow: 0 4px 20px rgba(45, 55, 72, 0.3);
     transition: all 0.3s ease;
     z-index: 1000;
     display: flex;
@@ -20,16 +20,18 @@
     font-weight: 600;
     min-height: 44px;
     animation: pulse 2s infinite;
+    font-family: Tahoma, sans-serif;
 }
 
 .chatbot-toggle:hover, .chatbot-toggle:focus {
     transform: translateY(-3px);
-    box-shadow: 0 6px 25px rgba(102, 126, 234, 0.4);
+    box-shadow: 0 6px 25px rgba(45, 55, 72, 0.4);
     outline: none;
+    background: #1a202c;
 }
 
 .chatbot-toggle:focus {
-    box-shadow: 0 6px 25px rgba(102, 126, 234, 0.4), 0 0 0 3px rgba(102, 126, 234, 0.3);
+    box-shadow: 0 6px 25px rgba(45, 55, 72, 0.4), 0 0 0 3px rgba(45, 55, 72, 0.3);
 }
 
 @keyframes pulse {
@@ -70,14 +72,15 @@
     right: 20px;
     width: 400px;
     height: 600px;
-    background: white;
+    background: #E3D2CE;
     border-radius: 15px;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
     display: none;
     flex-direction: column;
     z-index: 1001;
-    border: 2px solid #667eea;
+    border: 2px solid #2d3748;
     overflow: hidden;
+    font-family: Tahoma, sans-serif;
 }
 
 .chatbot-container.minimized {
@@ -93,7 +96,7 @@
 
 /* Chatbot Header */
 .chatbot-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: #2d3748;
     color: white;
     padding: 15px;
     display: flex;
@@ -144,7 +147,7 @@
     flex: 1;
     padding: 15px;
     overflow-y: auto;
-    background: #f8f9fa;
+    background: rgba(255, 255, 255, 0.3);
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -185,7 +188,7 @@
 }
 
 .user-message .message-content {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: #2d3748;
     color: white;
     border-bottom-right-radius: 5px;
 }
