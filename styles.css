@@ -682,8 +682,8 @@ body {
 }
 
 .tab-btn.active {
-    color: #667eea;
-    border-bottom-color: #667eea;
+    color: #A5BFCC;
+    border-bottom-color: #A5BFCC;
 }
 
 .auth-form {
@@ -716,8 +716,8 @@ body {
 .form-group select:focus,
 .form-group textarea:focus {
     outline: none;
-    border-color: #667eea;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    border-color: #A5BFCC;
+    box-shadow: 0 0 0 3px rgba(165, 191, 204, 0.1);
 }
 
 .form-group small {
@@ -730,7 +730,7 @@ body {
 .auth-submit-btn {
     width: 100%;
     padding: 1rem;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: #A5BFCC;
     color: white;
     border: none;
     border-radius: 8px;
@@ -767,13 +767,13 @@ body {
     margin-bottom: 1rem;
     font-size: 1.3rem;
     text-align: center;
-    border-bottom: 2px solid #667eea;
+    border-bottom: 2px solid #A5BFCC;
     padding-bottom: 0.5rem;
 }
 
 /* PDF Upload Area */
 .pdf-upload-area {
-    border: 3px dashed #667eea;
+    border: 3px dashed #A5BFCC;
     border-radius: 10px;
     padding: 2rem 1rem;
     margin-bottom: 1rem;
@@ -784,8 +784,8 @@ body {
 }
 
 .pdf-upload-area:hover, .pdf-upload-area:focus-within {
-    border-color: #5a67d8;
-    background: rgba(102, 126, 234, 0.05);
+    border-color: #A5BFCC;
+    background: rgba(165, 191, 204, 0.05);
 }
 
 .pdf-upload-area.highlight {
@@ -806,7 +806,7 @@ body {
 
 .pdf-upload-area .upload-text p {
     font-size: 1.1rem;
-    color: #667eea;
+    color: #A5BFCC;
     margin-bottom: 0.5rem;
     font-weight: 500;
 }
@@ -841,7 +841,7 @@ body {
 }
 
 .pdf-info span:last-child {
-    color: #667eea;
+    color: #A5BFCC;
     font-size: 0.9rem;
 }
 
@@ -874,7 +874,7 @@ body {
 .speech-settings input[type="range"] {
     flex: 1;
     margin: 0 0.5rem;
-    accent-color: #667eea;
+    accent-color: #A5BFCC;
 }
 
 .speech-settings select {
@@ -888,15 +888,15 @@ body {
 
 .speech-settings select:focus {
     outline: none;
-    border-color: #667eea;
-    box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2);
+    border-color: #A5BFCC;
+    box-shadow: 0 0 0 2px rgba(165, 191, 204, 0.2);
 }
 
 .speech-settings span {
     min-width: 35px;
     text-align: center;
     font-weight: 500;
-    color: #667eea;
+    color: #A5BFCC;
     font-size: 0.9rem;
 }
 
@@ -951,7 +951,7 @@ body {
 
 .progress-fill {
     height: 100%;
-    background: linear-gradient(90deg, #667eea, #764ba2);
+    background: #A5BFCC;
     width: 0%;
     transition: width 0.3s ease;
     border-radius: 4px;
@@ -985,7 +985,7 @@ body {
 
 .control-btn {
     padding: 0.75rem 1rem;
-    background: #667eea;
+    background: #A5BFCC;
     color: white;
     border: none;
     border-radius: 8px;
@@ -997,7 +997,7 @@ body {
 }
 
 .control-btn:hover:not(:disabled) {
-    background: #5a67d8;
+    background: #8FA9B8;
     transform: translateY(-2px);
 }
 
@@ -1009,7 +1009,7 @@ body {
 
 .control-btn:focus {
     outline: none;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.3);
+    box-shadow: 0 0 0 3px rgba(165, 191, 204, 0.3);
 }
 
 .notes-container {
@@ -1029,8 +1029,8 @@ body {
 
 #notesText:focus {
     outline: none;
-    border-color: #667eea;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    border-color: #A5BFCC;
+    box-shadow: 0 0 0 3px rgba(165, 191, 204, 0.1);
 }
 
 .saved-notes {
@@ -1049,7 +1049,7 @@ body {
     padding: 1rem;
     margin-bottom: 1rem;
     border-radius: 8px;
-    border-left: 4px solid #667eea;
+    border-left: 4px solid #A5BFCC;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
@@ -1072,7 +1072,7 @@ body {
 
 .note-actions button {
     padding: 0.25rem 0.5rem;
-    background: #667eea;
+    background: #A5BFCC;
     color: white;
     border: none;
     border-radius: 4px;
@@ -1130,7 +1130,7 @@ body {
 }
 
 .upload-area {
-    border: 3px dashed #667eea;
+    border: 3px dashed #A5BFCC;
     border-radius: 15px;
     padding: 3rem 2rem;
     margin-bottom: 1rem;
@@ -1140,8 +1140,8 @@ body {
 }
 
 .upload-area:hover, .upload-area:focus-within {
-    border-color: #5a67d8;
-    background: rgba(102, 126, 234, 0.05);
+    border-color: #A5BFCC;
+    background: rgba(165, 191, 204, 0.05);
 }
 
 .upload-area input[type="file"] {
@@ -1154,7 +1154,7 @@ body {
 
 .upload-text p {
     font-size: 1.2rem;
-    color: #667eea;
+    color: #A5BFCC;
     margin-bottom: 0.5rem;
 }
 
@@ -1164,7 +1164,7 @@ body {
 
 .generate-btn {
     padding: 1rem 2rem;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: #A5BFCC;
     color: white;
     border: none;
     border-radius: 25px;
@@ -1177,7 +1177,7 @@ body {
 
 .generate-btn:hover:not(:disabled) {
     transform: translateY(-3px);
-    box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+    box-shadow: 0 10px 25px rgba(165, 191, 204, 0.4);
 }
 
 .generate-btn:disabled {
@@ -1203,7 +1203,7 @@ body {
 
 .card-nav-btn {
     padding: 0.75rem 1.5rem;
-    background: #667eea;
+    background: #A5BFCC;
     color: white;
     border: none;
     border-radius: 8px;
@@ -1214,7 +1214,7 @@ body {
 }
 
 .card-nav-btn:hover:not(:disabled) {
-    background: #5a67d8;
+    background: #8FA9B8;
     transform: translateY(-2px);
 }
 
@@ -1247,11 +1247,11 @@ body {
 .flashcard:hover, .flashcard:focus {
     transform: translateY(-5px);
     box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
-    border-color: #667eea;
+    border-color: #A5BFCC;
 }
 
 .flashcard.flipped {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: #A5BFCC;
     color: white;
 }
 
@@ -1284,7 +1284,7 @@ body {
     width: 80px;
     height: 80px;
     border-radius: 50%;
-    background: #667eea;
+    background: #A5BFCC;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1345,7 +1345,7 @@ body {
 }
 
 .profile-btn:not(.logout) {
-    background: #667eea;
+    background: #A5BFCC;
     color: white;
 }
 
@@ -1377,7 +1377,7 @@ body {
     width: 40px;
     height: 40px;
     border: 4px solid #f3f3f3;
-    border-top: 4px solid #667eea;
+    border-top: 4px solid #A5BFCC;
     border-radius: 50%;
     animation: spin 1s linear infinite;
     margin: 0 auto 1rem;
@@ -1548,7 +1548,7 @@ select:focus,
 textarea:focus,
 .feature-card:focus,
 .flashcard:focus {
-    outline: 3px solid #667eea;
+    outline: 3px solid #A5BFCC;
     outline-offset: 2px;
 }
 
@@ -1576,7 +1576,7 @@ textarea:focus,
     padding: 1.5rem;
     border-radius: 10px;
     margin-bottom: 2rem;
-    border-left: 4px solid #667eea;
+    border-left: 4px solid #A5BFCC;
 }
 
 .feedback-intro p {
@@ -1629,8 +1629,8 @@ textarea:focus,
 .feedback-form select:focus,
 .feedback-form textarea:focus {
     outline: none;
-    border-color: #667eea;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    border-color: #A5BFCC;
+    box-shadow: 0 0 0 3px rgba(165, 191, 204, 0.1);
 }
 
 .feedback-form small {
@@ -1639,6 +1639,45 @@ textarea:focus,
     color: #666;
     font-size: 0.875rem;
     line-height: 1.4;
+}
+
+/* Radio Button Styling */
+input[type="radio"] {
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #A5BFCC;
+    border-radius: 50%;
+    background: white;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+input[type="radio"]:checked {
+    background: #A5BFCC;
+    border-color: #A5BFCC;
+}
+
+input[type="radio"]:checked::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: white;
+}
+
+input[type="radio"]:focus {
+    outline: 3px solid rgba(165, 191, 204, 0.3);
+    outline-offset: 2px;
+}
+
+input[type="radio"]:hover {
+    border-color: #8FA9B8;
 }
 
 /* Star Rating */
@@ -1670,7 +1709,7 @@ textarea:focus,
 .star-rating label:hover,
 .star-rating label:hover ~ label,
 .star-rating input:checked ~ label {
-    color: #ffc107;
+    color: #A5BFCC;
 }
 
 .rating-text {
@@ -1738,13 +1777,13 @@ textarea:focus,
 }
 
 .btn-primary {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: #A5BFCC;
     color: white;
 }
 
 .btn-primary:hover, .btn-primary:focus {
     transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    box-shadow: 0 5px 15px rgba(165, 191, 204, 0.4);
 }
 
 .btn-secondary {
