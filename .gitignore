@@ -135,3 +135,4 @@ uploads/
 # Test files
 test-pdfs/
 sample-files/
+.vercel

@@ -569,8 +569,8 @@ async function handlePdfUpload(event) {
         const formData = new FormData();
         formData.append('pdf', file);
 
-        console.log('Sending request to /extract-text');
-        const response = await fetch('/extract-text', {
+        console.log('Sending request to /api/extract-text');
+        const response = await fetch('/api/extract-text', {
             method: 'POST',
             body: formData
         });
@@ -990,7 +990,7 @@ async function uploadPDF() {
         const formData = new FormData();
         formData.append('pdf', file);
 
-        const response = await fetch('/upload', {
+        const response = await fetch('/api/upload', {
             method: 'POST',
             body: formData
         });
@@ -1182,7 +1182,7 @@ async function checkBedrockStatus() {
     const textElement = document.getElementById('aiStatusText');
 
     try {
-        const response = await fetch('/bedrock-status');
+        const response = await fetch('/api/bedrock-status');
         const data = await response.json();
 
         if (data.status === 'connected') {
@@ -1270,7 +1270,7 @@ async function handleFeedbackSubmit(e) {
     showLoading(true);
 
     try {
-        const response = await fetch('/submit-feedback', {
+        const response = await fetch('/api/submit-feedback', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

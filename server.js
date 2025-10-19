@@ -87,7 +87,7 @@ app.use(express.static('public'));
 app.use(express.json());
 
 // Extract text endpoint for PDF text-to-speech in notes
-app.post('/extract-text', upload.single('pdf'), async (req, res) => {
+app.post('/api/extract-text', upload.single('pdf'), async (req, res) => {
     try {
         if (!req.file) {
             return res.status(400).json({ error: 'No PDF file uploaded' });
@@ -123,7 +123,7 @@ app.post('/extract-text', upload.single('pdf'), async (req, res) => {
 });
 
 // Upload endpoint for PDF flashcard generation
-app.post('/upload', upload.single('pdf'), async (req, res) => {
+app.post('/api/upload', upload.single('pdf'), async (req, res) => {
     try {
         if (!req.file) {
             return res.status(400).json({ error: 'No PDF file uploaded' });
@@ -458,7 +458,7 @@ function findActionWords(sentences) {
 }
 
 // Health check endpoint
-app.get('/health', (req, res) => {
+app.get('/api/health', (req, res) => {
     res.json({ 
         status: 'OK', 
         timestamp: new Date().toISOString(),
@@ -476,7 +476,7 @@ app.get('/health', (req, res) => {
 });
 
 // Bedrock configuration check endpoint
-app.get('/bedrock-status', async (req, res) => {
+app.get('/api/bedrock-status', async (req, res) => {
     try {
         // Test Bedrock connection with a simple request
         const testPrompt = "Hello, this is a test. Please respond with 'Bedrock is working'.";
@@ -788,7 +788,7 @@ function getFallbackResponse(message) {
 }
 
 // Feedback submission endpoint
-app.post('/submit-feedback', async (req, res) => {
+app.post('/api/submit-feedback', async (req, res) => {
     try {
         const feedback = req.body;
         
