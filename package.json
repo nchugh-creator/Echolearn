@@ -3,10 +3,11 @@
   "version": "1.0.0",
   "description": "An accessibility-focused learning platform for students with disabilities featuring speech-to-text, text-to-speech, AI flashcards, and user profiles",
   "homepage": "https://echolearn.us",
-  "main": "server.js",
+  "main": "index.html",
   "scripts": {
-    "start": "node server.js",
-    "dev": "nodemon server.js"
+    "build": "echo 'Static site - no build needed'",
+    "start": "echo 'Static site deployed'",
+    "dev": "python -m http.server 3000"
   },
   "keywords": [
     "accessibility",
