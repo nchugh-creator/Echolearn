@@ -11,6 +11,8 @@ EchoLearn transforms the learning experience for students with disabilities thro
 
 ![EchoLearn Demo](https://via.placeholder.com/800x400/667eea/ffffff?text=EchoLearn+Demo)
 
+**🌐 Live Website**: [https://echolearn.us](https://echolearn.us)
+
 ## ✨ Features
 
 ### 🎤 Smart Notes
@@ -52,7 +54,7 @@ EchoLearn transforms the learning experience for students with disabilities thro
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/yourusername/echolearn.git
+   git clone https://github.com/nchugh-creator/echolearn.git
    cd echolearn
    ```
 
@@ -234,8 +236,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📞 Support & Contact
 
-- **Issues**: [GitHub Issues](https://github.com/yourusername/echolearn/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/yourusername/echolearn/discussions)
+- **Issues**: [GitHub Issues](https://github.com/nchugh-creator/echolearn/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/nchugh-creator/echolearn/discussions)
+- **Website**: [https://echolearn.us](https://echolearn.us)
 - **Accessibility Feedback**: Priority support for accessibility improvements
 - **Educational Partnerships**: Contact for institutional implementations
 

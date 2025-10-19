@@ -217,6 +217,13 @@ function setupEventListeners() {
     
     // Keyboard navigation
     document.addEventListener('keydown', handleKeyboardNavigation);
+    
+    // Feedback form
+    document.getElementById('feedbackForm').addEventListener('submit', handleFeedbackSubmit);
+    document.getElementById('feedbackMessage').addEventListener('input', updateCharCounter);
+    
+    // Star rating
+    setupStarRating();
 }
 
 // Navigation functions
@@ -1173,6 +1180,125 @@ async function checkBedrockStatus() {
         iconElement.textContent = '🤖⚠️';
         textElement.textContent = 'AI Status Unknown - Using Rule-Based Generation';
     }
+}
+
+// Feedback Form Functions
+function setupStarRating() {
+    const stars = document.querySelectorAll('.star-rating input');
+    const ratingText = document.getElementById('ratingText');
+    
+    const ratingLabels = {
+        '1': 'Poor - Needs significant improvement',
+        '2': 'Fair - Some issues to address', 
+        '3': 'Good - Generally satisfactory',
+        '4': 'Very Good - Exceeds expectations',
+        '5': 'Excellent - Outstanding experience'
+    };
+    
+    stars.forEach(star => {
+        star.addEventListener('change', function() {
+            const rating = this.value;
+            ratingText.textContent = ratingLabels[rating];
+            ratingText.style.color = '#667eea';
+        });
+    });
+}
+
+function updateCharCounter() {
+    const textarea = document.getElementById('feedbackMessage');
+    const counter = document.getElementById('charCount');
+    const currentLength = textarea.value.length;
+    const maxLength = 1000;
+    
+    counter.textContent = currentLength;
+    
+    // Update counter styling based on character count
+    const counterElement = counter.parentElement;
+    counterElement.classList.remove('warning', 'danger');
+    
+    if (currentLength > maxLength * 0.9) {
+        counterElement.classList.add('danger');
+    } else if (currentLength > maxLength * 0.75) {
+        counterElement.classList.add('warning');
+    }
+}
+
+async function handleFeedbackSubmit(e) {
+    e.preventDefault();
+    
+    const formData = {
+        name: document.getElementById('feedbackName').value,
+        email: document.getElementById('feedbackEmail').value,
+        type: document.getElementById('feedbackType').value,
+        disability: document.getElementById('feedbackDisability').value,
+        rating: document.querySelector('input[name="rating"]:checked')?.value || '',
+        subject: document.getElementById('feedbackSubject').value,
+        message: document.getElementById('feedbackMessage').value,
+        sendCopy: document.getElementById('feedbackCopy').checked,
+        updates: document.getElementById('feedbackUpdates').checked,
+        timestamp: new Date().toISOString(),
+        userAgent: navigator.userAgent,
+        currentUser: currentUser ? currentUser.id : 'anonymous'
+    };
+    
+    // Validate required fields
+    if (!formData.name || !formData.email || !formData.type || !formData.subject || !formData.message) {
+        showToast('Please fill in all required fields', 'error');
+        return;
+    }
+    
+    showLoading(true);
+    
+    try {
+        const response = await fetch('/submit-feedback', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formData)
+        });
+        
+        if (!response.ok) {
+            throw new Error('Failed to submit feedback');
+        }
+        
+        const result = await response.json();
+        
+        // Show success message
+        document.getElementById('feedbackForm').style.display = 'none';
+        document.getElementById('feedbackSuccess').style.display = 'block';
+        
+        showToast('Feedback submitted successfully!', 'success');
+        
+        // Scroll to success message
+        document.getElementById('feedbackSuccess').scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'center' 
+        });
+        
+    } catch (error) {
+        console.error('Feedback submission error:', error);
+        showToast('Failed to submit feedback. Please try again.', 'error');
+    } finally {
+        showLoading(false);
+    }
+}
+
+function clearFeedbackForm() {
+    if (confirm('Are you sure you want to clear all form data?')) {
+        document.getElementById('feedbackForm').reset();
+        document.getElementById('ratingText').textContent = 'Click to rate';
+        document.getElementById('ratingText').style.color = '#666';
+        document.getElementById('charCount').textContent = '0';
+        document.getElementById('charCount').parentElement.classList.remove('warning', 'danger');
+        showToast('Form cleared', 'success');
+    }
+}
+
+function resetFeedbackForm() {
+    document.getElementById('feedbackForm').style.display = 'block';
+    document.getElementById('feedbackSuccess').style.display = 'none';
+    clearFeedbackForm();
 }
 
 // Initialize drag and drop for file uploads

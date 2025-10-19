@@ -4,20 +4,59 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EchoLearn - Learning Platform for Students with Disabilities</title>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="AI-powered accessibility-focused learning platform for students with disabilities. Features speech-to-text, text-to-speech, and AI flashcards.">
+    <meta name="keywords" content="accessibility, learning disabilities, speech-to-text, text-to-speech, AI flashcards, inclusive education">
+    <meta name="author" content="EchoLearn Team">
+    <meta name="robots" content="index, follow">
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="EchoLearn - Accessible Learning Platform">
+    <meta property="og:description" content="AI-powered learning platform designed for students with disabilities">
+    <meta property="og:url" content="https://echolearn.us">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="EchoLearn">
+    
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="EchoLearn - Accessible Learning Platform">
+    <meta name="twitter:description" content="AI-powered learning platform designed for students with disabilities">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://echolearn.us">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    
     <link rel="stylesheet" href="styles.css">
+    
+    <!-- Supabase CDN -->
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 </head>
 <body>
     <!-- Navigation -->
     <nav class="navbar" role="navigation" aria-label="Main navigation">
         <div class="nav-container">
             <div class="nav-brand">
-                <h1>EchoLearn</h1>
+                <div class="nav-logo">
+                    <div class="nav-logo-icon">
+                        <div class="nav-sound-waves">
+                            <div class="nav-wave"></div>
+                            <div class="nav-wave"></div>
+                            <div class="nav-wave"></div>
+                        </div>
+                        <span class="nav-book">📖</span>
+                    </div>
+                    <h1>EchoLearn</h1>
+                </div>
             </div>
             <div class="nav-links" id="navLinks">
                 <button class="nav-btn" onclick="showSection('home')" aria-label="Go to home page" style="display: none;">Home</button>
                 <button class="nav-btn" onclick="showSection('notes')" aria-label="Go to notes section" style="display: none;">Notes</button>
                 <button class="nav-btn" onclick="showSection('flashcards')" aria-label="Go to flashcards section" style="display: none;">Flashcards</button>
                 <button class="nav-btn" onclick="showSection('profile')" aria-label="Go to profile page" style="display: none;">Profile</button>
+                <button class="nav-btn" onclick="showSection('feedback')" aria-label="Go to feedback page" style="display: none;">Feedback</button>
                 <button class="nav-btn" id="authBtn" onclick="showAuth()" aria-label="Login or signup">Login</button>
             </div>
         </div>
@@ -103,7 +142,17 @@
     <div id="loginRequired" class="login-required-overlay">
         <div class="login-required-content">
             <div class="brand-logo">
-                <h1>🎓 EchoLearn</h1>
+                <div class="logo-container">
+                    <div class="logo-icon">
+                        <div class="sound-waves">
+                            <div class="wave wave-1"></div>
+                            <div class="wave wave-2"></div>
+                            <div class="wave wave-3"></div>
+                        </div>
+                        <div class="book-icon">📖</div>
+                    </div>
+                    <h1>EchoLearn</h1>
+                </div>
                 <p class="tagline">Your Voice, Your Learning, Your Way</p>
             </div>
             
@@ -160,6 +209,10 @@
                     <div class="feature-card" onclick="showSection('profile')">
                         <h3>Your Profile</h3>
                         <p>Manage your personal information and learning preferences</p>
+                    </div>
+                    <div class="feature-card" onclick="showSection('feedback')">
+                        <h3>Share Feedback</h3>
+                        <p>Help us improve EchoLearn with your suggestions and experiences</p>
                     </div>
                 </div>
             </div>
@@ -351,6 +404,121 @@
                 </div>
             </div>
         </section>
+
+        <!-- Feedback Section -->
+        <section id="feedbackSection" class="content-section">
+            <h2>Share Your Feedback</h2>
+            
+            <div class="feedback-container">
+                <div class="feedback-intro">
+                    <p>Your feedback helps us make EchoLearn more accessible and effective for students with disabilities. We value your experience and suggestions!</p>
+                </div>
+                
+                <form id="feedbackForm" class="feedback-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="feedbackName">Your Name:</label>
+                            <input type="text" id="feedbackName" required aria-describedby="feedbackNameHelp">
+                            <small id="feedbackNameHelp">How should we address you in our response?</small>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="feedbackEmail">Email Address:</label>
+                            <input type="email" id="feedbackEmail" required aria-describedby="feedbackEmailHelp">
+                            <small id="feedbackEmailHelp">We'll send a copy of your feedback here</small>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="feedbackType">Feedback Type:</label>
+                        <select id="feedbackType" required aria-describedby="feedbackTypeHelp">
+                            <option value="">Select feedback type</option>
+                            <option value="accessibility">Accessibility Improvement</option>
+                            <option value="feature">Feature Request</option>
+                            <option value="bug">Bug Report</option>
+                            <option value="usability">Usability Feedback</option>
+                            <option value="general">General Feedback</option>
+                            <option value="testimonial">Success Story/Testimonial</option>
+                        </select>
+                        <small id="feedbackTypeHelp">Help us categorize your feedback</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="feedbackDisability">Your Accessibility Needs (Optional):</label>
+                        <select id="feedbackDisability" aria-describedby="feedbackDisabilityHelp">
+                            <option value="">Prefer not to specify</option>
+                            <option value="visual">Visual Impairment</option>
+                            <option value="hearing">Hearing Impairment</option>
+                            <option value="mobility">Mobility Impairment</option>
+                            <option value="cognitive">Cognitive Disability</option>
+                            <option value="learning">Learning Disability</option>
+                            <option value="multiple">Multiple Disabilities</option>
+                            <option value="other">Other</option>
+                            <option value="none">No Disability</option>
+                        </select>
+                        <small id="feedbackDisabilityHelp">This helps us understand your perspective</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="feedbackRating">Overall Experience Rating:</label>
+                        <div class="rating-container">
+                            <div class="star-rating" role="radiogroup" aria-label="Rate your experience from 1 to 5 stars">
+                                <input type="radio" id="star5" name="rating" value="5" aria-label="5 stars - Excellent">
+                                <label for="star5" class="star">★</label>
+                                <input type="radio" id="star4" name="rating" value="4" aria-label="4 stars - Very Good">
+                                <label for="star4" class="star">★</label>
+                                <input type="radio" id="star3" name="rating" value="3" aria-label="3 stars - Good">
+                                <label for="star3" class="star">★</label>
+                                <input type="radio" id="star2" name="rating" value="2" aria-label="2 stars - Fair">
+                                <label for="star2" class="star">★</label>
+                                <input type="radio" id="star1" name="rating" value="1" aria-label="1 star - Poor">
+                                <label for="star1" class="star">★</label>
+                            </div>
+                            <span id="ratingText" class="rating-text">Click to rate</span>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="feedbackSubject">Subject:</label>
+                        <input type="text" id="feedbackSubject" required aria-describedby="feedbackSubjectHelp" maxlength="100">
+                        <small id="feedbackSubjectHelp">Brief summary of your feedback (max 100 characters)</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="feedbackMessage">Your Feedback:</label>
+                        <textarea id="feedbackMessage" rows="6" required aria-describedby="feedbackMessageHelp" maxlength="1000"></textarea>
+                        <small id="feedbackMessageHelp">Share your detailed feedback, suggestions, or experiences (max 1000 characters)</small>
+                        <div class="char-counter">
+                            <span id="charCount">0</span>/1000 characters
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="feedbackCopy" checked>
+                            <label for="feedbackCopy">Send me a copy of this feedback</label>
+                        </div>
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="feedbackUpdates">
+                            <label for="feedbackUpdates">Keep me updated on EchoLearn improvements</label>
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" class="btn-secondary" onclick="clearFeedbackForm()">Clear Form</button>
+                        <button type="submit" class="btn-primary">Send Feedback</button>
+                    </div>
+                </form>
+                
+                <div class="feedback-success" id="feedbackSuccess" style="display: none;">
+                    <div class="success-icon">✅</div>
+                    <h3>Thank You for Your Feedback!</h3>
+                    <p>Your feedback has been sent successfully. We appreciate your input in making EchoLearn more accessible.</p>
+                    <p>You should receive a copy of your feedback at your email address shortly.</p>
+                    <button class="btn-primary" onclick="resetFeedbackForm()">Send Another Feedback</button>
+                </div>
+            </div>
+        </section>
     </main>
 
     <!-- Loading Indicator -->
@@ -362,6 +530,7 @@
     <!-- Toast Notifications -->
     <div id="toast" class="toast" role="alert" aria-live="assertive"></div>
 
+    <script src="supabase-client.js"></script>
     <script src="script.js"></script>
 </body>
 </html>

@@ -7,8 +7,13 @@ require('dotenv').config();
 // AWS Bedrock imports
 const { BedrockRuntimeClient, InvokeModelCommand } = require('@aws-sdk/client-bedrock-runtime');
 
+// Email functionality
+const nodemailer = require('nodemailer');
+
 const app = express();
 const PORT = process.env.PORT || 3000;
+const DOMAIN = process.env.DOMAIN || 'echolearn.us';
+const BASE_URL = process.env.BASE_URL || `https://${DOMAIN}`;
 
 // Initialize AWS Bedrock client
 const bedrockClient = new BedrockRuntimeClient({
@@ -20,6 +25,45 @@ const bedrockClient = new BedrockRuntimeClient({
 });
 
 const BEDROCK_MODEL_ID = process.env.BEDROCK_MODEL_ID || 'anthropic.claude-3-sonnet-20240229-v1:0';
+
+// Email configuration
+let emailTransporter = null;
+
+function initializeEmailTransporter() {
+    try {
+        if (process.env.EMAIL_SERVICE === 'gmail') {
+            emailTransporter = nodemailer.createTransporter({
+                service: 'gmail',
+                auth: {
+                    user: process.env.EMAIL_USER,
+                    pass: process.env.EMAIL_PASS
+                }
+            });
+        } else if (process.env.EMAIL_HOST) {
+            emailTransporter = nodemailer.createTransporter({
+                host: process.env.EMAIL_HOST,
+                port: process.env.EMAIL_PORT || 587,
+                secure: process.env.EMAIL_SECURE === 'true',
+                auth: {
+                    user: process.env.EMAIL_USER,
+                    pass: process.env.EMAIL_PASS
+                }
+            });
+        }
+        
+        if (emailTransporter) {
+            console.log('📧 Email transporter initialized successfully');
+        } else {
+            console.log('📧 Email not configured - feedback will be logged only');
+        }
+    } catch (error) {
+        console.error('Email configuration error:', error);
+        emailTransporter = null;
+    }
+}
+
+// Initialize email on startup
+initializeEmailTransporter();
 
 // Configure multer for file uploads
 const storage = multer.memoryStorage();
@@ -39,6 +83,7 @@ const upload = multer({
 
 // Middleware
 app.use(express.static('.'));
+app.use(express.static('public'));
 app.use(express.json());
 
 // Extract text endpoint for PDF text-to-speech in notes
@@ -417,7 +462,16 @@ app.get('/health', (req, res) => {
     res.json({ 
         status: 'OK', 
         timestamp: new Date().toISOString(),
-        service: 'EchoLearn API'
+        service: 'EchoLearn API',
+        domain: DOMAIN,
+        baseUrl: BASE_URL,
+        version: process.env.npm_package_version || '1.0.0',
+        features: {
+            speechToText: true,
+            textToSpeech: true,
+            aiFlashcards: !!process.env.AWS_ACCESS_KEY_ID,
+            emailFeedback: !!process.env.EMAIL_USER || !!process.env.SENDGRID_API_KEY
+        }
     });
 });
 
@@ -492,6 +546,183 @@ app.use((error, req, res, next) => {
     });
 });
 
+// Feedback submission endpoint
+app.post('/submit-feedback', async (req, res) => {
+    try {
+        const feedback = req.body;
+        
+        // Validate required fields
+        if (!feedback.name || !feedback.email || !feedback.subject || !feedback.message) {
+            return res.status(400).json({ 
+                error: 'Missing required fields' 
+            });
+        }
+        
+        console.log('📝 New feedback received from:', feedback.name);
+        
+        // Save feedback to file/database (for backup)
+        const feedbackRecord = {
+            ...feedback,
+            id: Date.now().toString(),
+            receivedAt: new Date().toISOString()
+        };
+        
+        // Log feedback (in production, save to database)
+        console.log('Feedback Record:', JSON.stringify(feedbackRecord, null, 2));
+        
+        // Send emails if configured
+        if (emailTransporter) {
+            await sendFeedbackEmails(feedback);
+        }
+        
+        res.json({
+            success: true,
+            message: 'Feedback submitted successfully',
+            id: feedbackRecord.id
+        });
+        
+    } catch (error) {
+        console.error('Feedback submission error:', error);
+        res.status(500).json({
+            error: 'Failed to submit feedback',
+            details: error.message
+        });
+    }
+});
+
+async function sendFeedbackEmails(feedback) {
+    const feedbackEmail = process.env.FEEDBACK_EMAIL || process.env.EMAIL_USER;
+    const fromEmail = process.env.EMAIL_FROM || process.env.EMAIL_USER;
+    
+    // Email to admin/team
+    const adminEmailContent = `
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; text-align: center; }
+        .content { padding: 20px; }
+        .feedback-details { background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 15px 0; }
+        .label { font-weight: bold; color: #667eea; }
+        .rating { font-size: 1.2em; color: #ffc107; }
+        .footer { background: #f8f9fa; padding: 15px; text-align: center; font-size: 0.9em; color: #666; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🎓 EchoLearn Feedback</h1>
+        <p>New feedback received from a user</p>
+    </div>
+    
+    <div class="content">
+        <div class="feedback-details">
+            <p><span class="label">From:</span> ${feedback.name} (${feedback.email})</p>
+            <p><span class="label">Type:</span> ${feedback.type}</p>
+            <p><span class="label">Accessibility Needs:</span> ${feedback.disability || 'Not specified'}</p>
+            <p><span class="label">Rating:</span> <span class="rating">${'★'.repeat(feedback.rating || 0)}${'☆'.repeat(5 - (feedback.rating || 0))}</span> (${feedback.rating || 'Not rated'}/5)</p>
+            <p><span class="label">Subject:</span> ${feedback.subject}</p>
+        </div>
+        
+        <h3>Message:</h3>
+        <div class="feedback-details">
+            <p>${feedback.message.replace(/\n/g, '<br>')}</p>
+        </div>
+        
+        <div class="feedback-details">
+            <p><span class="label">Submitted:</span> ${new Date().toLocaleString()}</p>
+            <p><span class="label">User Agent:</span> ${feedback.userAgent || 'Not provided'}</p>
+            <p><span class="label">User ID:</span> ${feedback.currentUser || 'Anonymous'}</p>
+            <p><span class="label">Send Copy:</span> ${feedback.sendCopy ? 'Yes' : 'No'}</p>
+            <p><span class="label">Updates:</span> ${feedback.updates ? 'Yes' : 'No'}</p>
+        </div>
+    </div>
+    
+    <div class="footer">
+        <p>This feedback was submitted through the EchoLearn platform.</p>
+        <p>Please respond to the user at: ${feedback.email}</p>
+    </div>
+</body>
+</html>`;
+
+    // Email to user (copy)
+    const userEmailContent = `
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; text-align: center; }
+        .content { padding: 20px; }
+        .feedback-copy { background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #667eea; }
+        .label { font-weight: bold; color: #667eea; }
+        .footer { background: #f8f9fa; padding: 15px; text-align: center; font-size: 0.9em; color: #666; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🎓 EchoLearn</h1>
+        <p>Thank you for your feedback!</p>
+    </div>
+    
+    <div class="content">
+        <p>Dear ${feedback.name},</p>
+        
+        <p>Thank you for taking the time to share your feedback with us. Your input is invaluable in helping us make EchoLearn more accessible and effective for students with disabilities.</p>
+        
+        <h3>Your Feedback Summary:</h3>
+        <div class="feedback-copy">
+            <p><span class="label">Type:</span> ${feedback.type}</p>
+            <p><span class="label">Subject:</span> ${feedback.subject}</p>
+            <p><span class="label">Rating:</span> ${feedback.rating ? feedback.rating + '/5 stars' : 'Not rated'}</p>
+            <p><span class="label">Message:</span></p>
+            <p>${feedback.message.replace(/\n/g, '<br>')}</p>
+            <p><span class="label">Submitted:</span> ${new Date().toLocaleString()}</p>
+        </div>
+        
+        <p>We review all feedback carefully and will use your suggestions to improve our platform. If your feedback requires a direct response, we'll get back to you within 2-3 business days.</p>
+        
+        <p>Thank you for helping us create a more inclusive learning environment!</p>
+        
+        <p>Best regards,<br>The EchoLearn Team</p>
+    </div>
+    
+    <div class="footer">
+        <p>This is an automated confirmation. Please do not reply to this email.</p>
+        <p>For support, contact us through the EchoLearn platform.</p>
+    </div>
+</body>
+</html>`;
+
+    try {
+        // Send email to admin/team
+        await emailTransporter.sendMail({
+            from: fromEmail,
+            to: feedbackEmail,
+            subject: `EchoLearn Feedback: ${feedback.subject}`,
+            html: adminEmailContent
+        });
+        
+        console.log('📧 Admin notification email sent');
+        
+        // Send copy to user if requested
+        if (feedback.sendCopy) {
+            await emailTransporter.sendMail({
+                from: fromEmail,
+                to: feedback.email,
+                subject: 'EchoLearn - Feedback Confirmation',
+                html: userEmailContent
+            });
+            
+            console.log('📧 User confirmation email sent to:', feedback.email);
+        }
+        
+    } catch (error) {
+        console.error('Email sending error:', error);
+        throw error;
+    }
+}
+
 // 404 handler
 app.use((req, res) => {
     res.status(404).json({ 
@@ -502,6 +733,7 @@ app.use((req, res) => {
 
 app.listen(PORT, () => {
     console.log(`🚀 EchoLearn server running on http://localhost:${PORT}`);
+    console.log(`🌐 Production domain: ${BASE_URL}`);
     console.log(`📚 Features: PDF Flashcards, Speech-to-Text, Text-to-Speech, User Profiles`);
     console.log(`♿ Accessibility-focused learning platform for students with disabilities`);
 });
