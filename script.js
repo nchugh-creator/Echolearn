@@ -1784,7 +1784,7 @@ function redeemVisaCard(dollarAmount, coinCost) {
             `This will be delivered to your email within 24-48 hours.\n\n` +
             `Continue with redemption?`
         );
-        
+
         if (confirmed) {
             // Process the redemption
             processVisaRedemption(dollarAmount, coinCost);
@@ -1792,10 +1792,10 @@ function redeemVisaCard(dollarAmount, coinCost) {
     } else {
         const needed = coinCost - userBalance;
         showToast(
-            `❌ Insufficient EchoCoins! You need ${needed.toLocaleString()} more coins to redeem this gift card. Keep learning to earn more! 📚`, 
+            `❌ Insufficient EchoCoins! You need ${needed.toLocaleString()} more coins to redeem this gift card. Keep learning to earn more! 📚`,
             'error'
         );
-        
+
         // Show earning suggestions
         setTimeout(() => {
             showEarningSuggestions(needed);
@@ -1809,16 +1809,16 @@ function processVisaRedemption(dollarAmount, coinCost) {
     userBalance -= coinCost;
     saveUserBalance();
     updateBalanceDisplay();
-    
+
     // Add transaction
     addTransaction(`VISA Gift Card $${dollarAmount}`, coinCost, 'negative');
-    
+
     // Save redemption record
     saveVisaRedemption(dollarAmount, coinCost);
-    
+
     // Show processing animation
     showVisaProcessing(dollarAmount);
-    
+
     // Simulate API call to VISA system
     setTimeout(() => {
         completeVisaRedemption(dollarAmount);
@@ -1833,7 +1833,7 @@ function showVisaProcessing(dollarAmount) {
         button.innerHTML = '🔄 Processing...';
         button.classList.add('visa-processing');
     }
-    
+
     showToast('🔄 Processing your VISA gift card...', 'info');
 }
 
@@ -1843,7 +1843,7 @@ function completeVisaRedemption(dollarAmount) {
     const giftCardNumber = generateMockCardNumber();
     const expiryDate = new Date();
     expiryDate.setFullYear(expiryDate.getFullYear() + 1);
-    
+
     // Save gift card details
     const giftCard = {
         id: Date.now(),
@@ -1853,9 +1853,9 @@ function completeVisaRedemption(dollarAmount) {
         redeemedAt: new Date().toISOString(),
         status: 'active'
     };
-    
+
     saveGiftCard(giftCard);
-    
+
     // Reset button
     const button = document.getElementById(`visa-${dollarAmount}`);
     if (button) {
@@ -1863,10 +1863,10 @@ function completeVisaRedemption(dollarAmount) {
         button.innerHTML = `Redeem for ${coinCost.toLocaleString()} 🪙`;
         button.classList.remove('visa-processing');
     }
-    
+
     // Show success message
     showVisaSuccess(giftCard);
-    
+
     // Update achievements
     updateVisaAchievements(dollarAmount);
 }
@@ -1875,11 +1875,11 @@ function completeVisaRedemption(dollarAmount) {
 function generateMockCardNumber() {
     const prefix = '4000'; // VISA prefix
     let number = prefix;
-    
+
     for (let i = 0; i < 12; i++) {
         number += Math.floor(Math.random() * 10);
     }
-    
+
     return number;
 }
 
@@ -1891,16 +1891,16 @@ function showEarningSuggestions(needed) {
         { activity: 'Voice Recordings', coins: 5, count: Math.ceil(needed / 5) },
         { activity: 'Daily Logins', coins: 20, count: Math.ceil(needed / 20) }
     ];
-    
+
     let message = `💡 Ways to earn ${needed.toLocaleString()} more coins:\n\n`;
     suggestions.forEach(suggestion => {
         if (suggestion.count <= 50) { // Only show reasonable suggestions
             message += `• ${suggestion.activity}: ${suggestion.count} times (${suggestion.coins} coins each)\n`;
         }
     });
-    
+
     message += `\n🎯 Keep learning to unlock your VISA gift card!`;
-    
+
     alert(message);
 }
 
@@ -1914,7 +1914,7 @@ function saveVisaRedemption(dollarAmount, coinCost) {
         timestamp: new Date().toISOString(),
         status: 'completed'
     };
-    
+
     redemptions.unshift(redemption);
     localStorage.setItem('echolearn_visa_redemptions', JSON.stringify(redemptions));
 }
@@ -1944,7 +1944,7 @@ function showVisaSuccess(giftCard) {
         `🎉 SUCCESS! Your $${giftCard.amount} VISA Gift Card has been redeemed!\n\n` +
         `Card Number: ${formatCardNumber(giftCard.cardNumber)}\n` +
         `Expires: ${new Date(giftCard.expiryDate).toLocaleDateString()}\n\n` +
-        `Details sent to your email! 📧`, 
+        `Details sent to your email! 📧`,
         'success'
     );
 }
@@ -1965,15 +1965,15 @@ function updateVisaAchievements(dollarAmount) {
             completed: false
         };
     }
-    
+
     rewardsData.achievements['visa-redeemer'].current++;
-    
+
     if (rewardsData.achievements['visa-redeemer'].current >= rewardsData.achievements['visa-redeemer'].target && !rewardsData.achievements['visa-redeemer'].completed) {
         rewardsData.achievements['visa-redeemer'].completed = true;
         awardCoins(null, rewardsData.achievements['visa-redeemer'].coins);
         showToast(`🏅 VISA Redeemer Achievement Unlocked! Earned ${rewardsData.achievements['visa-redeemer'].coins} bonus coins!`, 'success');
     }
-    
+
     saveUserAchievements();
 }
 
@@ -2001,7 +2001,7 @@ function updateBalanceDisplayWithVisa() {
 
 // Override the original updateBalanceDisplay
 const originalUpdateBalanceDisplay = updateBalanceDisplay;
-updateBalanceDisplay = function() {
+updateBalanceDisplay = function () {
     originalUpdateBalanceDisplay();
     updateBalanceDisplayWithVisa();
 };
@@ -2010,11 +2010,11 @@ updateBalanceDisplay = function() {
 function initializeVisaSystem() {
     // Check if user has enough coins for any VISA card
     const minVisaCost = 1000; // $10 card
-    
+
     if (userBalance >= minVisaCost) {
         showToast('🎉 You can now redeem VISA gift cards! Check the VISA section.', 'success');
     }
-    
+
     updateBalanceDisplayWithVisa();
 }
 

@@ -396,6 +396,7 @@ body {
     padding: 2rem;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
     margin-bottom: 2rem;
+    position: relative;
 }
 
 .content-section.active {
@@ -409,6 +410,88 @@ body {
     text-align: center;
 }
 
+/* Child Photo Corner */
+.child-photo-corner {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 100;
+    animation: photoFloat 6s ease-in-out infinite;
+}
+
+.child-photo-container {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    border: 4px solid #E3D2CE;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.child-photo-container:hover {
+    transform: scale(1.1);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+    border-color: #071F35;
+}
+
+.child-photo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    transition: all 0.3s ease;
+}
+
+.child-photo-container:hover .child-photo {
+    transform: scale(1.05);
+}
+
+.photo-caption {
+    position: absolute;
+    bottom: -35px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #071F35;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    white-space: nowrap;
+    opacity: 0;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 15px rgba(7, 31, 53, 0.3);
+}
+
+.child-photo-container:hover .photo-caption {
+    opacity: 1;
+    bottom: -40px;
+}
+
+.caption-text {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+@keyframes photoFloat {
+    0%, 100% {
+        transform: translateY(0px) rotate(0deg);
+    }
+    25% {
+        transform: translateY(-10px) rotate(1deg);
+    }
+    50% {
+        transform: translateY(-5px) rotate(-1deg);
+    }
+    75% {
+        transform: translateY(-15px) rotate(0.5deg);
+    }
+}
+
 /* Home Section - Natural Design */
 .hero-section {
     padding: 3rem 0;
@@ -416,6 +499,7 @@ body {
     background: rgba(255, 255, 255, 0.3);
     border-radius: 20px;
     margin-bottom: 3rem;
+    position: relative;
 }
 
 .hero-content h2 {
@@ -1527,6 +1611,28 @@ body {
     .action-btn {
         width: 100%;
         max-width: 280px;
+    }
+    
+    /* Child Photo Mobile */
+    .child-photo-corner {
+        top: 10px;
+        right: 10px;
+    }
+    
+    .child-photo-container {
+        width: 80px;
+        height: 80px;
+        border-width: 3px;
+    }
+    
+    .photo-caption {
+        font-size: 0.7rem;
+        padding: 0.25rem 0.75rem;
+        bottom: -30px;
+    }
+    
+    .child-photo-container:hover .photo-caption {
+        bottom: -35px;
     }
     
     /* Notes Layout Mobile */
