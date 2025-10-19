@@ -1635,6 +1635,35 @@ body {
     margin: 0;
 }
 
+/* Editable Profile Inputs */
+.profile-input {
+    flex: 1;
+    padding: 0.5rem;
+    border: 2px solid #e9ecef;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    background: white;
+    transition: border-color 0.3s ease;
+    margin: 0;
+}
+
+.profile-input:focus {
+    outline: none;
+    border-color: #071F35;
+    box-shadow: 0 0 0 3px rgba(7, 31, 53, 0.1);
+}
+
+.profile-textarea {
+    resize: vertical;
+    min-height: 60px;
+    font-family: inherit;
+}
+
+.profile-input::placeholder {
+    color: #999;
+    font-style: italic;
+}
+
 .profile-actions {
     display: flex;
     gap: 1rem;

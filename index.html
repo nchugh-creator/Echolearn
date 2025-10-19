@@ -512,21 +512,38 @@
 
                     <div class="profile-details">
                         <div class="detail-item">
-                            <label>Age:</label>
-                            <span id="profileAge">-</span>
+                            <label for="profileNameInput">Name:</label>
+                            <input type="text" id="profileNameInput" class="profile-input" placeholder="Enter your name">
                         </div>
                         <div class="detail-item">
-                            <label>Accessibility Needs:</label>
-                            <span id="profileDisability">-</span>
+                            <label for="profileLocationInput">Location:</label>
+                            <input type="text" id="profileLocationInput" class="profile-input" placeholder="Enter your city">
                         </div>
                         <div class="detail-item">
-                            <label>About Me:</label>
-                            <p id="profileMemo">-</p>
+                            <label for="profileAgeInput">Age:</label>
+                            <input type="number" id="profileAgeInput" class="profile-input" min="13" max="100" placeholder="Enter your age">
+                        </div>
+                        <div class="detail-item">
+                            <label for="profileDisabilityInput">Accessibility Needs:</label>
+                            <select id="profileDisabilityInput" class="profile-input">
+                                <option value="">Select if applicable</option>
+                                <option value="dyslexia">Dyslexia</option>
+                                <option value="adhd">ADHD</option>
+                                <option value="autism">Autism Spectrum Disorder</option>
+                                <option value="processing">Auditory/Visual Processing Disorder</option>
+                                <option value="memory">Memory Impairment</option>
+                                <option value="executive">Executive Function Disorder</option>
+                                <option value="other">Other Learning Disability</option>
+                            </select>
+                        </div>
+                        <div class="detail-item">
+                            <label for="profileMemoInput">About Me:</label>
+                            <textarea id="profileMemoInput" class="profile-input profile-textarea" rows="3" placeholder="Tell us about yourself"></textarea>
                         </div>
                     </div>
 
                     <div class="profile-actions">
-                        <button id="editProfile" class="profile-btn" onclick="editProfile()">Edit Profile</button>
+                        <button id="saveProfile" class="profile-btn" onclick="saveProfile()">Save Changes</button>
                         <button id="logoutBtn" class="profile-btn logout" onclick="logout()">Logout</button>
                     </div>
                 </div>
