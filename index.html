@@ -158,33 +158,33 @@
             </div>
             
             <div class="welcome-message">
-                <h2>Welcome to EchoLearn</h2>
-                <p>An accessibility-focused learning platform designed specifically for students with disabilities.</p>
+                <h2>Hey there!</h2>
+                <p>EchoLearn is a study platform that actually works with how you learn. Whether you need voice controls, screen reader support, or just better study tools - we've got you covered.</p>
                 
                 <div class="feature-highlights">
                     <div class="highlight-item">
                         <span class="highlight-icon">🎤</span>
-                        <span>Speech-to-Text Notes</span>
+                        <span>Talk instead of type</span>
                     </div>
                     <div class="highlight-item">
                         <span class="highlight-icon">🔊</span>
-                        <span>Text-to-Speech Reading</span>
+                        <span>Listen to your notes</span>
                     </div>
                     <div class="highlight-item">
-                        <span class="highlight-icon">🤖</span>
-                        <span>AI-Powered Flashcards</span>
+                        <span class="highlight-icon">📚</span>
+                        <span>Auto-generate study cards</span>
                     </div>
                     <div class="highlight-item">
-                        <span class="highlight-icon">♿</span>
-                        <span>Fully Accessible Design</span>
+                        <span class="highlight-icon">⚙️</span>
+                        <span>Works with your tools</span>
                     </div>
                 </div>
             </div>
             
             <div class="auth-prompt">
-                <p>Please log in or create an account to access your personalized learning experience.</p>
+                <p>Ready to try it? Just sign up and we'll get you started.</p>
                 <button class="auth-prompt-btn" onclick="showAuth()" aria-label="Open login or signup">
-                    Get Started
+                    Let's go
                 </button>
             </div>
         </div>
@@ -194,26 +194,87 @@
     <main class="main-content" role="main" id="mainContent" style="display: none;">
         <!-- Home Section -->
         <section id="homeSection" class="content-section active">
-            <div class="welcome-container">
-                <h2>Welcome to EchoLearn</h2>
-                <p>Your personalized learning platform designed for accessibility and inclusion.</p>
-                
-                <div class="feature-grid">
-                    <div class="feature-card" onclick="showSection('notes')">
-                        <h3>Smart Notes</h3>
-                        <p>Speech-to-text and text-to-speech capabilities for seamless note-taking</p>
+            <div class="hero-section">
+                <div class="hero-content">
+                    <h2>Learning shouldn't have barriers</h2>
+                    <p class="hero-subtitle">We built EchoLearn because every student deserves tools that work with them, not against them.</p>
+                    
+                    <div class="hero-stats">
+                        <div class="stat-item">
+                            <span class="stat-number">3</span>
+                            <span class="stat-label">core tools</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">100%</span>
+                            <span class="stat-label">accessible</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">0</span>
+                            <span class="stat-label">barriers</span>
+                        </div>
                     </div>
-                    <div class="feature-card" onclick="showSection('flashcards')">
-                        <h3>AI Flashcards</h3>
-                        <p>Upload PDFs and generate interactive flashcards automatically</p>
+                </div>
+            </div>
+
+            <div class="features-section">
+                <div class="section-header">
+                    <h3>What you can do here</h3>
+                    <p>Three simple tools that actually understand how you learn best</p>
+                </div>
+
+                <div class="features-list">
+                    <div class="feature-item" onclick="showSection('notes')">
+                        <div class="feature-icon">🎤</div>
+                        <div class="feature-content">
+                            <h4>Voice Notes</h4>
+                            <p>Talk instead of type. We'll turn your voice into text, or read your notes back to you. Perfect when your hands are tired or you learn better by listening.</p>
+                            <span class="feature-link">Try voice notes →</span>
+                        </div>
                     </div>
-                    <div class="feature-card" onclick="showSection('profile')">
-                        <h3>Your Profile</h3>
-                        <p>Manage your personal information and learning preferences</p>
+
+                    <div class="feature-item" onclick="showSection('flashcards')">
+                        <div class="feature-icon">📚</div>
+                        <div class="feature-content">
+                            <h4>Study Cards</h4>
+                            <p>Drop in any PDF - textbook chapter, lecture slides, whatever. We'll pull out the important stuff and make study cards for you. No more highlighting everything.</p>
+                            <span class="feature-link">Make study cards →</span>
+                        </div>
                     </div>
-                    <div class="feature-card" onclick="showSection('feedback')">
-                        <h3>Share Feedback</h3>
-                        <p>Help us improve EchoLearn with your suggestions and experiences</p>
+
+                    <div class="feature-item" onclick="showSection('profile')">
+                        <div class="feature-icon">⚙️</div>
+                        <div class="feature-content">
+                            <h4>Your Settings</h4>
+                            <p>Tell us what works for you - screen reader, voice speed, whatever helps. We'll remember so you don't have to set it up every time.</p>
+                            <span class="feature-link">Customize experience →</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="getting-started">
+                <div class="start-content">
+                    <h3>Ready to start?</h3>
+                    <p>Pick any tool above, or just click around. Everything here works with keyboards, screen readers, and whatever else you use.</p>
+                    
+                    <div class="quick-actions">
+                        <button class="action-btn primary" onclick="showSection('notes')">
+                            Start with notes
+                        </button>
+                        <button class="action-btn secondary" onclick="showSection('feedback')">
+                            Questions? Let us know
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="about-section">
+                <div class="about-content">
+                    <h4>Why we made this</h4>
+                    <p>Too many learning tools are built without thinking about accessibility. We started with accessibility first, then built the features around that. The result? Tools that work better for everyone.</p>
+                    
+                    <div class="team-note">
+                        <p><em>Built by students who get it. Questions or ideas? We actually read every message you send.</em></p>
                     </div>
                 </div>
             </div>
