@@ -1049,6 +1049,7 @@ body {
 
 .control-btn:disabled {
     background: #ccc;
+    color: #071F35;
     cursor: not-allowed;
     opacity: 0.6;
 }
@@ -1238,6 +1239,7 @@ body {
 
 .generate-btn:disabled {
     background: #ccc;
+    color: #071F35;
     cursor: not-allowed;
     transform: none;
     box-shadow: none;
@@ -1276,6 +1278,7 @@ body {
 
 .card-nav-btn:disabled {
     background: #ccc;
+    color: #071F35;
     cursor: not-allowed;
 }
 
