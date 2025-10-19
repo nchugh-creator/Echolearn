@@ -425,23 +425,28 @@ function logout() {
 
 function updateProfileDisplay() {
     if (currentUser) {
+        // Update the header name display
         document.getElementById('profileName').textContent = currentUser.name;
-        document.getElementById('profileLocation').textContent = currentUser.city;
-        document.getElementById('profileAge').textContent = currentUser.age;
-        document.getElementById('profileDisability').textContent =
-            currentUser.disability || 'Not specified';
-        document.getElementById('profileMemo').textContent =
-            currentUser.memo || 'No description provided';
+        
+        // Populate the editable input fields
+        document.getElementById('profileNameInput').value = currentUser.name || '';
+        document.getElementById('profileLocationInput').value = currentUser.city || '';
+        document.getElementById('profileAgeInput').value = currentUser.age || '';
+        document.getElementById('profileDisabilityInput').value = currentUser.disability || '';
+        document.getElementById('profileMemoInput').value = currentUser.memo || '';
 
         // Set initials
         const initials = currentUser.name.split(' ').map(n => n[0]).join('');
         document.getElementById('profileInitials').textContent = initials;
     } else {
         document.getElementById('profileName').textContent = 'Please log in to view your profile';
-        document.getElementById('profileLocation').textContent = '';
-        document.getElementById('profileAge').textContent = '-';
-        document.getElementById('profileDisability').textContent = '-';
-        document.getElementById('profileMemo').textContent = '-';
+        
+        // Clear all input fields
+        document.getElementById('profileNameInput').value = '';
+        document.getElementById('profileLocationInput').value = '';
+        document.getElementById('profileAgeInput').value = '';
+        document.getElementById('profileDisabilityInput').value = '';
+        document.getElementById('profileMemoInput').value = '';
         document.getElementById('profileInitials').textContent = '?';
     }
 }
@@ -1232,30 +1237,77 @@ function announceToScreenReader(message) {
     }, 1000);
 }
 
-function editProfile() {
+async function saveProfile() {
     if (!currentUser) {
         showToast('Please log in first', 'error');
         return;
     }
 
-    // Simple implementation - in a real app, this would open an edit form
-    const newName = prompt('Enter new name:', currentUser.name);
-    if (newName && newName.trim()) {
-        currentUser.name = newName.trim();
+    // Get values from input fields
+    const name = document.getElementById('profileNameInput').value.trim();
+    const city = document.getElementById('profileLocationInput').value.trim();
+    const age = document.getElementById('profileAgeInput').value;
+    const disability = document.getElementById('profileDisabilityInput').value;
+    const memo = document.getElementById('profileMemoInput').value.trim();
 
-        // Update in localStorage
-        const users = JSON.parse(localStorage.getItem('users') || '[]');
-        const userIndex = users.findIndex(u => u.id === currentUser.id);
-        if (userIndex !== -1) {
-            users[userIndex] = currentUser;
-            localStorage.setItem('users', JSON.stringify(users));
-            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+    // Validate required fields
+    if (!name) {
+        showToast('Name is required', 'error');
+        document.getElementById('profileNameInput').focus();
+        return;
+    }
+
+    // Update currentUser object
+    currentUser.name = name;
+    currentUser.city = city;
+    currentUser.age = age;
+    currentUser.disability = disability;
+    currentUser.memo = memo;
+
+    try {
+        // Try to update in Supabase if available
+        if (window.SupabaseDB) {
+            const { data, error } = await SupabaseDB.auth.createUserProfile(currentUser.id, {
+                email: currentUser.email,
+                name: name,
+                city: city,
+                age: parseInt(age) || null,
+                disability: disability,
+                memo: memo
+            });
+            
+            if (error) {
+                console.error('Supabase update error:', error);
+                // Fall back to localStorage
+                updateLocalStorage();
+            } else {
+                showToast('Profile updated in cloud!', 'success');
+            }
+        } else {
+            // Update in localStorage
+            updateLocalStorage();
         }
-
+        
+        // Update UI
         updateAuthUI();
         updateProfileDisplay();
-        showToast('Profile updated successfully!', 'success');
+        
+    } catch (error) {
+        console.error('Profile update error:', error);
+        updateLocalStorage();
     }
+}
+
+function updateLocalStorage() {
+    // Update in localStorage
+    const users = JSON.parse(localStorage.getItem('users') || '[]');
+    const userIndex = users.findIndex(u => u.id === currentUser.id);
+    if (userIndex !== -1) {
+        users[userIndex] = currentUser;
+        localStorage.setItem('users', JSON.stringify(users));
+        localStorage.setItem('currentUser', JSON.stringify(currentUser));
+    }
+    showToast('Profile updated locally!', 'success');
 }
 
 // Check Bedrock AI status

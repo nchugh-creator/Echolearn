@@ -1,56 +1,72 @@
-# Deploy EchoLearn to Production
+# Deploy EchoLearn Backend to Make AI Work on Domain
 
-## 🚀 Quick Deployment to Vercel
+## 🎯 Problem
+- AI works on `localhost:3000` ✅
+- AI doesn't work on `echolearn.us` ❌
+- Domain needs backend server for AWS Bedrock
 
-### 1. Install Vercel CLI
+## 🚀 Solution: Deploy Backend to Vercel
+
+### Step 1: Install Vercel CLI
 ```bash
-npm i -g vercel
+npm install -g vercel
 ```
 
-### 2. Login to Vercel
+### Step 2: Login to Vercel
 ```bash
 vercel login
 ```
 
-### 3. Deploy
+### Step 3: Deploy Project
 ```bash
-vercel
+vercel --prod
 ```
 
-### 4. Configure Environment Variables
-In Vercel dashboard, add these environment variables:
+### Step 4: Add Environment Variables
+In Vercel Dashboard → Settings → Environment Variables:
 
-- `AWS_ACCESS_KEY_ID`: Your AWS access key
-- `AWS_SECRET_ACCESS_KEY`: Your AWS secret key  
-- `AWS_REGION`: us-east-1
-- `BEDROCK_MODEL_ID`: anthropic.claude-3-sonnet-20240229-v1:0
+| Variable | Value |
+|----------|-------|
+| `AWS_ACCESS_KEY_ID` | Your AWS access key |
+| `AWS_SECRET_ACCESS_KEY` | Your AWS secret key |
+| `AWS_REGION` | `us-east-1` |
+| `BEDROCK_MODEL_ID` | `anthropic.claude-3-sonnet-20240229-v1:0` |
 
-### 5. Connect Domain
-- Go to Vercel dashboard
-- Click on your project
-- Go to Settings → Domains
-- Add `echolearn.us`
+### Step 5: Connect Domain
+1. Vercel Dashboard → Your Project
+2. Settings → Domains
+3. Add `echolearn.us`
+4. Follow DNS instructions
 
-### 6. Update Supabase
+### Step 6: Update Supabase
+- Authentication → Settings
 - Site URL: `https://echolearn.us`
 - Redirect URLs: `https://echolearn.us`
 
-## ✅ After Deployment
+## ✅ Test AI Connection
 
-Your AI flashcards will work at:
-- `https://echolearn.us/api/upload` (flashcard generation)
-- `https://echolearn.us/api/bedrock-status` (AI status check)
+After deployment, test:
+- `https://echolearn.us/api/bedrock-status`
+- Should return: `{"status": "connected"}`
 
-## 🔧 Alternative: Railway Deployment
+## 🔧 Alternative: Quick Deploy Script
 
-1. Go to railway.app
-2. Connect GitHub repo
-3. Add environment variables
-4. Deploy automatically
+Run the deployment script:
+```bash
+./deploy.sh
+```
 
-## 📱 Mobile Access
+## 📱 Result
 
-Once deployed, mobile users can access:
-- `https://echolearn.us` - Full functionality
-- AI flashcards will work on mobile
-- All features accessible worldwide
+Once deployed:
+- ✅ AI flashcards work on `echolearn.us`
+- ✅ Mobile users can access AI features
+- ✅ All backend functionality available worldwide
+
+## 🆘 Troubleshooting
+
+If AI still doesn't work:
+1. Check Vercel function logs
+2. Verify environment variables are set
+3. Test `/api/bedrock-status` endpoint
+4. Check AWS credentials and permissions
