@@ -93,31 +93,31 @@ body {
 
 .sound-waves {
     position: absolute;
-    right: -50px;
+    left: 30px;
     display: flex;
     align-items: center;
-    gap: 4px;
+    gap: 5px;
 }
 
 .wave {
-    width: 6px;
+    width: 8px;
     background: #2d3748;
-    border-radius: 3px;
+    border-radius: 4px;
     animation: waveAnimation 2s ease-in-out infinite;
 }
 
 .wave-1 {
-    height: 25px;
+    height: 35px;
     animation-delay: 0s;
 }
 
 .wave-2 {
-    height: 40px;
+    height: 50px;
     animation-delay: 0.3s;
 }
 
 .wave-3 {
-    height: 32px;
+    height: 42px;
     animation-delay: 0.6s;
 }
 
@@ -137,7 +137,7 @@ body {
 .brand-logo h1 {
     color: #2d3748;
     font-family: 'Fredoka', sans-serif;
-    font-size: 3.5rem;
+    font-size: 4.2rem;
     margin: 0;
     font-weight: 600;
     text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
@@ -236,7 +236,7 @@ body {
     }
     
     .brand-logo h1 {
-        font-size: 3rem;
+        font-size: 3.6rem;
         font-family: 'Fredoka', sans-serif;
     }
     
@@ -309,31 +309,31 @@ body {
 
 .nav-sound-waves {
     position: absolute;
-    right: -25px;
+    left: 20px;
     display: flex;
     align-items: center;
-    gap: 2px;
+    gap: 3px;
 }
 
 .nav-wave {
-    width: 3px;
+    width: 4px;
     background: #2d3748;
     border-radius: 2px;
     animation: navWaveAnimation 1.5s ease-in-out infinite;
 }
 
 .nav-wave:nth-child(1) {
-    height: 12px;
+    height: 16px;
     animation-delay: 0s;
 }
 
 .nav-wave:nth-child(2) {
-    height: 20px;
+    height: 25px;
     animation-delay: 0.2s;
 }
 
 .nav-wave:nth-child(3) {
-    height: 16px;
+    height: 20px;
     animation-delay: 0.4s;
 }
 
@@ -347,7 +347,7 @@ body {
 .nav-brand h1 {
     color: #2d3748;
     font-family: 'Fredoka', sans-serif;
-    font-size: 2.1rem;
+    font-size: 2.5rem;
     font-weight: 600;
     margin: 0;
     letter-spacing: -0.01em;
